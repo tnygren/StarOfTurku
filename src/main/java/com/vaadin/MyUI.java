@@ -8,14 +8,13 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
+import com.vaadin.tapio.googlemaps.client.events.MarkerClickListener;
+import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapMarker;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapPolyline;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicMarkableReference;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser window 
@@ -35,16 +34,31 @@ public class MyUI extends UI {
         setContent(layout);
 
         final GoogleMap googleMap = new GoogleMap("apiKey", null, null);
+        GoogleMapMarker markA = new GoogleMapMarker(
+                "laatta", new LatLon(60.450043,22.277698), false, "VAADIN/red-circle.png");
+        markA.setAnimationEnabled(false);
+        googleMap.addMarker(markA);
+        GoogleMapMarker markB = new GoogleMapMarker(
+                "ruutu", new LatLon(60.451419,22.275509), false, "VAADIN/black-circle.png");
+        markB.setAnimationEnabled(false);
+        googleMap.addMarker(markB);
+        GoogleMapMarker markC = new GoogleMapMarker(
+                "ruutu", new LatLon(60.452519,22.273621), false, "VAADIN/black-circle.png");
+        markC.setAnimationEnabled(false);
+        googleMap.addMarker(markC);
+
+        GoogleMapMarker pelaaja1 = new GoogleMapMarker(
+                "pelaaja", new LatLon(60.452519,22.273621), true, "VAADIN/pelaaja1.png");
+        pelaaja1.setAnimationEnabled(true);
+        googleMap.addMarker(pelaaja1);
+        GoogleMapMarker tinakuppi = new GoogleMapMarker(
+                "palkinto", new LatLon(60.450043,22.277698), false, "VAADIN/tinakuppi.jpg");
+        tinakuppi.setAnimationEnabled(false);
+
         googleMap.setCenter(new LatLon(60.451948, 22.275295));
         googleMap.setZoom(15);
         googleMap.setHeight("500px");
         googleMap.setWidth("650px");
-        googleMap.addMarker("a", new LatLon(
-                60.450043,22.277698), false, "VAADIN/red-circle.png");
-        googleMap.addMarker("b", new LatLon(
-                60.451419,22.275509), false, "VAADIN/black-circle.png");
-        googleMap.addMarker("c", new LatLon(
-                60.452519,22.273621), false, "VAADIN/black-circle.png");
         googleMap.setMinZoom(4);
         googleMap.setMaxZoom(16);
 
@@ -57,6 +71,22 @@ public class MyUI extends UI {
         GoogleMapPolyline overlay = new GoogleMapPolyline(
                 points, "#d31717", 0.8, 8);
         googleMap.addPolyline(overlay);
+
+        googleMap.addMarkerClickListener(new MarkerClickListener() {
+            @Override
+            public void markerClicked(GoogleMapMarker clickedMarker) {
+                if (clickedMarker.getCaption().equalsIgnoreCase("pelaaja")) {
+                    googleMap.removeMarker(clickedMarker);
+                    pelaaja1.setPosition(new LatLon(60.451419, 22.275509));
+                    googleMap.addMarker(pelaaja1);
+                }
+
+                if (clickedMarker.getCaption().equalsIgnoreCase("laatta")) {
+                    googleMap.removeMarker(clickedMarker);
+                    googleMap.addMarker(tinakuppi);
+                }
+            }
+        });
 
         layout.addComponent(googleMap);
     }
