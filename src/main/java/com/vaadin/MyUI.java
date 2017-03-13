@@ -2,6 +2,7 @@ package com.vaadin;
 
 import javax.servlet.annotation.WebServlet;
 
+import com.StarOfTurku.src.starofturku.Noppa;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.VaadinRequest;
@@ -25,6 +26,7 @@ import java.util.concurrent.atomic.AtomicMarkableReference;
  */
 @Theme("mytheme")
 public class MyUI extends UI {
+    private Noppa noppa = new Noppa();
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
@@ -89,6 +91,12 @@ public class MyUI extends UI {
         });
 
         layout.addComponent(googleMap);
+
+        Button button = new Button("Heitä noppaa");
+        button.addClickListener( e -> {
+            layout.addComponent(new Label(Integer.toString(noppa.heita())));
+        });
+        layout.addComponent(button);
     }
 
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
