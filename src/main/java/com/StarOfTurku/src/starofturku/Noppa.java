@@ -1,4 +1,4 @@
-package starofturku;
+package com.StarOfTurku.src.starofturku;
 
 import java.util.Random;
 
