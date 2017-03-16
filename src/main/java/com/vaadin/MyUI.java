@@ -30,7 +30,7 @@ public class MyUI extends UI {
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-        final VerticalLayout layout = new VerticalLayout();
+        final HorizontalLayout layout = new HorizontalLayout();
         layout.setMargin(true);
         layout.setSpacing(true);
         setContent(layout);
@@ -163,13 +163,19 @@ public class MyUI extends UI {
 //            }
 //        });
 
+        googleMap.setSizeFull();
+        layout.setSizeFull();
         layout.addComponent(googleMap);
 
+        VerticalLayout ui = new VerticalLayout();
+        ui.addComponent(new Label("Pelaaja 1"));
+        ui.addComponent(new Label("Pisteet 1000"));
         Button button = new Button("Heitä noppaa");
         button.addClickListener( e -> {
-            layout.addComponent(new Label(Integer.toString(noppa.heita())));
+            ui.addComponent(new Label(Integer.toString(noppa.heita())));
         });
-        layout.addComponent(button);
+        ui.addComponent(button);
+        layout.addComponent(ui);
     }
 
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
