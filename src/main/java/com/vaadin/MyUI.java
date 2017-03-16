@@ -36,23 +36,96 @@ public class MyUI extends UI {
         setContent(layout);
 
         final GoogleMap googleMap = new GoogleMap("apiKey", null, null);
-        GoogleMapMarker markA = new GoogleMapMarker(
-                "laatta", new LatLon(60.450043,22.277698), false, "VAADIN/red-circle.png");
-        markA.setAnimationEnabled(false);
-        googleMap.addMarker(markA);
-        GoogleMapMarker markB = new GoogleMapMarker(
-                "ruutu", new LatLon(60.451419,22.275509), false, "VAADIN/black-circle.png");
-        markB.setAnimationEnabled(false);
-        googleMap.addMarker(markB);
-        GoogleMapMarker markC = new GoogleMapMarker(
-                "ruutu", new LatLon(60.452519,22.273621), false, "VAADIN/black-circle.png");
-        markC.setAnimationEnabled(false);
-        googleMap.addMarker(markC);
+        GoogleMapMarker koti1= new GoogleMapMarker(
+                "koti", new LatLon(60.451863,22.282290), false, "VAADIN/red-circle.png");
+        koti1.setAnimationEnabled(false);
+        googleMap.addMarker(koti1);
 
-        GoogleMapMarker pelaaja1 = new GoogleMapMarker(
-                "pelaaja", new LatLon(60.452519,22.273621), true, "VAADIN/pelaaja1.png");
-        pelaaja1.setAnimationEnabled(true);
-        googleMap.addMarker(pelaaja1);
+        GoogleMapMarker laatta1= new GoogleMapMarker(
+                "laatta", new LatLon(60.450043,22.277698), false, "VAADIN/red-circle.png");
+        laatta1.setAnimationEnabled(false);
+        googleMap.addMarker(laatta1);
+        GoogleMapMarker laatta2= new GoogleMapMarker(
+                "laatta", new LatLon(60.453683,22.270917), false, "VAADIN/red-circle.png");
+        laatta2.setAnimationEnabled(false);
+        googleMap.addMarker(laatta2);
+        GoogleMapMarker laatta3= new GoogleMapMarker(
+                "laatta", new LatLon(60.450160,22.273664), false, "VAADIN/red-circle.png");
+        laatta3.setAnimationEnabled(false);
+        googleMap.addMarker(laatta3);
+
+        GoogleMapMarker ruutu1 = new GoogleMapMarker(
+                "ruutu", new LatLon(60.451461,22.281088), false, "VAADIN/black-circle.png");
+        ruutu1.setAnimationEnabled(false);
+        googleMap.addMarker(ruutu1);
+        GoogleMapMarker ruutu2 = new GoogleMapMarker(
+                "ruutu", new LatLon(60.450879,22.279307), false, "VAADIN/black-circle.png");
+        ruutu2.setAnimationEnabled(false);
+        googleMap.addMarker(ruutu2);
+
+        GoogleMapMarker ruutu3 = new GoogleMapMarker(
+                "ruutu", new LatLon(60.450096,22.276883), false, "VAADIN/black-circle.png");
+        ruutu3.setAnimationEnabled(false);
+        googleMap.addMarker(ruutu3);
+        GoogleMapMarker ruutu4 = new GoogleMapMarker(
+                "ruutu", new LatLon(60.450128,22.275059), false, "VAADIN/black-circle.png");
+        ruutu4.setAnimationEnabled(false);
+        googleMap.addMarker(ruutu4);
+
+        GoogleMapMarker ruutu5 = new GoogleMapMarker(
+                "ruutu", new LatLon(60.450784,22.272870), false, "VAADIN/black-circle.png");
+        ruutu5.setAnimationEnabled(false);
+        googleMap.addMarker(ruutu5);
+        GoogleMapMarker ruutu6 = new GoogleMapMarker(
+                "ruutu", new LatLon(60.451260,22.272419), false, "VAADIN/black-circle.png");
+        ruutu6.setAnimationEnabled(false);
+        googleMap.addMarker(ruutu6);
+        GoogleMapMarker ruutu7 = new GoogleMapMarker(
+                "ruutu", new LatLon(60.451630,22.271840), false, "VAADIN/black-circle.png");
+        ruutu7.setAnimationEnabled(false);
+        googleMap.addMarker(ruutu7);
+        GoogleMapMarker ruutu8 = new GoogleMapMarker(
+                "ruutu", new LatLon(60.452149,22.271196), false, "VAADIN/black-circle.png");
+        ruutu8.setAnimationEnabled(false);
+        googleMap.addMarker(ruutu8);
+        GoogleMapMarker ruutu9 = new GoogleMapMarker(
+                "ruutu", new LatLon(60.452646,22.270681), false, "VAADIN/black-circle.png");
+        ruutu9.setAnimationEnabled(false);
+        googleMap.addMarker(ruutu9);
+
+        GoogleMapMarker ruutu10 = new GoogleMapMarker(
+                "ruutu", new LatLon(60.453609,22.272720), false, "VAADIN/black-circle.png");
+        ruutu10.setAnimationEnabled(false);
+        googleMap.addMarker(ruutu10);
+        GoogleMapMarker ruutu11 = new GoogleMapMarker(
+                "ruutu", new LatLon(60.453334,22.273128), false, "VAADIN/black-circle.png");
+        ruutu11.setAnimationEnabled(false);
+        googleMap.addMarker(ruutu11);
+        GoogleMapMarker ruutu12 = new GoogleMapMarker(
+                "ruutu", new LatLon(60.452890,22.273900), false, "VAADIN/black-circle.png");
+        ruutu12.setAnimationEnabled(false);
+        googleMap.addMarker(ruutu12);
+        GoogleMapMarker ruutu13 = new GoogleMapMarker(
+                "ruutu", new LatLon(60.452583,22.274458), false, "VAADIN/black-circle.png");
+        ruutu13.setAnimationEnabled(false);
+        googleMap.addMarker(ruutu13);
+        GoogleMapMarker ruutu14 = new GoogleMapMarker(
+                "ruutu", new LatLon(60.452191,22.275037), false, "VAADIN/black-circle.png");
+        ruutu14.setAnimationEnabled(false);
+        googleMap.addMarker(ruutu14);
+        GoogleMapMarker ruutu15 = new GoogleMapMarker(
+                "ruutu", new LatLon(60.451705,22.275660), false, "VAADIN/black-circle.png");
+        ruutu15.setAnimationEnabled(false);
+        googleMap.addMarker(ruutu15);
+        GoogleMapMarker ruutu16 = new GoogleMapMarker(
+                "ruutu", new LatLon(60.451218,22.276561), false, "VAADIN/black-circle.png");
+        ruutu16.setAnimationEnabled(false);
+        googleMap.addMarker(ruutu16);
+
+//        GoogleMapMarker pelaaja1 = new GoogleMapMarker(
+//                "pelaaja", new LatLon(60.452519,22.273621), true, "VAADIN/pelaaja1.png");
+//        pelaaja1.setAnimationEnabled(true);
+//        googleMap.addMarker(pelaaja1);
         GoogleMapMarker tinakuppi = new GoogleMapMarker(
                 "palkinto", new LatLon(60.450043,22.277698), false, "VAADIN/tinakuppi.jpg");
         tinakuppi.setAnimationEnabled(false);
@@ -64,31 +137,31 @@ public class MyUI extends UI {
         googleMap.setMinZoom(4);
         googleMap.setMaxZoom(16);
 
-        ArrayList<LatLon> points = new ArrayList<LatLon>();
-        points.add(new LatLon(60.450043,22.277698));
-        points.add(new LatLon(60.451419,22.275509));
-        points.add(new LatLon(60.452519,22.273621));
-        points.add(new LatLon(60.451906,22.271218));
+//        ArrayList<LatLon> points = new ArrayList<LatLon>();
+//        points.add(new LatLon(60.450043,22.277698));
+//        points.add(new LatLon(60.451419,22.275509));
+//        points.add(new LatLon(60.452519,22.273621));
+//        points.add(new LatLon(60.451906,22.271218));
+//
+//        GoogleMapPolyline overlay = new GoogleMapPolyline(
+//                points, "#d31717", 0.8, 8);
+//        googleMap.addPolyline(overlay);
 
-        GoogleMapPolyline overlay = new GoogleMapPolyline(
-                points, "#d31717", 0.8, 8);
-        googleMap.addPolyline(overlay);
-
-        googleMap.addMarkerClickListener(new MarkerClickListener() {
-            @Override
-            public void markerClicked(GoogleMapMarker clickedMarker) {
-                if (clickedMarker.getCaption().equalsIgnoreCase("pelaaja")) {
-                    googleMap.removeMarker(clickedMarker);
-                    pelaaja1.setPosition(new LatLon(60.451419, 22.275509));
-                    googleMap.addMarker(pelaaja1);
-                }
-
-                if (clickedMarker.getCaption().equalsIgnoreCase("laatta")) {
-                    googleMap.removeMarker(clickedMarker);
-                    googleMap.addMarker(tinakuppi);
-                }
-            }
-        });
+//        googleMap.addMarkerClickListener(new MarkerClickListener() {
+//            @Override
+//            public void markerClicked(GoogleMapMarker clickedMarker) {
+//                if (clickedMarker.getCaption().equalsIgnoreCase("pelaaja")) {
+//                    googleMap.removeMarker(clickedMarker);
+//                    pelaaja1.setPosition(new LatLon(60.451419, 22.275509));
+//                    googleMap.addMarker(pelaaja1);
+//                }
+//
+//                if (clickedMarker.getCaption().equalsIgnoreCase("laatta")) {
+//                    googleMap.removeMarker(clickedMarker);
+//                    googleMap.addMarker(tinakuppi);
+//                }
+//            }
+//        });
 
         layout.addComponent(googleMap);
 
