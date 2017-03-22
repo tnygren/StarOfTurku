@@ -1,7 +1,7 @@
 package com.StarOfTurku.src.starofturku;
 
 import java.util.ArrayList;
-
+import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapMarker;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -17,22 +17,29 @@ public class Solmu {
     private Tokeni tokeni;
     private boolean pelaaja;
     private ArrayList<Solmu>vierussolmut;
+    private GoogleMapMarker marker;
 
     //luodaan konstruktori sekä nimetyille paikoille, että nimettömille siirtymäsolmuille
-    public Solmu(String nimi, Tokeni tokeni) {
+    public Solmu(String nimi, Tokeni tokeni,GoogleMapMarker marker) {
         this.nimi = nimi;
         this.tokeni = tokeni;
         this.pelaaja=false;
         this.vierussolmut=new ArrayList<>();
+        this.marker=marker;
     }
     
-    public Solmu() {
+    public Solmu(GoogleMapMarker marker) {
         this.nimi="-";
         this.tokeni=null;
         this.pelaaja=false;
         this.vierussolmut=new ArrayList<>();
+        this.marker=marker;
     }
 
+    public GoogleMapMarker getMarker() {
+        return marker;
+    }
+    
     public String getNimi() {
         return nimi;
     }
