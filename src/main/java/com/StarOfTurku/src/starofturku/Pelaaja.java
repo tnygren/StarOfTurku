@@ -17,7 +17,7 @@ public class Pelaaja {
     private int hilpeys;
     private boolean tinatuoppi;
     private Solmu paikka;
-    
+
     //pelaaja alustetaan nimellä ja aloitussolmulla
     public Pelaaja(String nimi, Solmu paikka) {
         this.nimi = nimi;
