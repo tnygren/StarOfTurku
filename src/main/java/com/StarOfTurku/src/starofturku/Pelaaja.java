@@ -38,6 +38,9 @@ public class Pelaaja {
         return hilpeys;
     }
 
+    public void setPaikka(Solmu s){
+        this.paikka = s;
+    }
     public void setHilpeys(int hilpeys) {
         this.hilpeys = hilpeys;
     }

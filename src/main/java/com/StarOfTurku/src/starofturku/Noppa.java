@@ -8,12 +8,18 @@ import java.util.Random;
  */
 public class Noppa {
     private Random random;
+    private int tulos;
 
     public Noppa() {
         this.random = new Random();
-    }    
-    public int heita(){
-        return 1+this.random.nextInt(6);
+        this.tulos = 0;
+    }
+    public int heita() {
+        tulos = 1+this.random.nextInt(6);
+        return tulos;
+    }
+    public int getTulos() {
+        return tulos;
     }
 }
         

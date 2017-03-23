@@ -29,6 +29,15 @@ import java.util.ArrayList;
 @Theme("mytheme")
 public class MyUI extends UI {
     private Noppa noppa = new Noppa();
+    private ApiKey key = new ApiKey();
+    private Kartta kartta=new Kartta();
+    private Pelaaja pelaaja= new Pelaaja("Simo", kartta.getKartta().get(0));
+    private ArrayList<Solmu> sallitut;
+    private ArrayList<GoogleMapMarker> sallitutMarkers = new ArrayList<>();
+    private final GoogleMap googleMap = new GoogleMap(key.getKey(), null, null);
+    private GoogleMapMarker pelaajaMerkki = new GoogleMapMarker(
+            "Pelaaja", kartta.getKartta().get(0).getMarker().getPosition(),
+        true, "VAADIN/pelaaja1.png");
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
@@ -49,45 +58,62 @@ public class MyUI extends UI {
         googleMap.setMinZoom(4);
         googleMap.setMaxZoom(16);
 
-//        ArrayList<LatLon> points = new ArrayList<LatLon>();
-//        points.add(new LatLon(60.450043,22.277698));
-//        points.add(new LatLon(60.451419,22.275509));
-//        points.add(new LatLon(60.452519,22.273621));
-//        points.add(new LatLon(60.451906,22.271218));
-//
-//        GoogleMapPolyline overlay = new GoogleMapPolyline(
-//                points, "#d31717", 0.8, 8);
-//        googleMap.addPolyline(overlay);
-
-//        googleMap.addMarkerClickListener(new MarkerClickListener() {
-//            @Override
-//            public void markerClicked(GoogleMapMarker clickedMarker) {
-//                if (clickedMarker.getCaption().equalsIgnoreCase("pelaaja")) {
-//                    googleMap.removeMarker(clickedMarker);
-//                    pelaaja1.setPosition(new LatLon(60.451419, 22.275509));
-//                    googleMap.addMarker(pelaaja1);
-//                }
-//
-//                if (clickedMarker.getCaption().equalsIgnoreCase("laatta")) {
-//                    googleMap.removeMarker(clickedMarker);
-//                    googleMap.addMarker(tinakuppi);
-//                }
-//            }
-//        });
-
         googleMap.setSizeFull();
         layout.setSizeFull();
         layout.addComponent(googleMap);
+
+        googleMap.addMarkerClickListener(this::siirraPelaaja);
 
         VerticalLayout ui = new VerticalLayout();
         ui.addComponent(new Label("Pelaaja 1"));
         ui.addComponent(new Label("Pisteet 1000"));
         Button button = new Button("Heitä noppaa");
         button.addClickListener( e -> {
-            ui.addComponent(new Label(Integer.toString(noppa.heita())));
+            // TODO lisää jokin ehto joka estää painamasta useaan kertaan
+            ui.addComponent( new Label(Integer.toString(noppa.heita())));
+            merkkaaSallitutSolmut(noppa.getTulos());
         });
         ui.addComponent(button);
         layout.addComponent(ui);
+    }
+
+    private void siirraPelaaja(GoogleMapMarker clicked) {
+        for(Solmu s: sallitut){
+            // Jos klikattu ruutu kuuluu sallittuihin ruutuihin
+            if (clicked.getPosition().equals(s.getMarker().getPosition())) {
+                // Siirtää pelaaja markerin
+                googleMap.removeMarker(pelaajaMerkki);
+                GoogleMapMarker m = new GoogleMapMarker(
+                        pelaajaMerkki.getCaption(),
+                        clicked.getPosition(),
+                        false,
+                        pelaajaMerkki.getIconUrl());
+                googleMap.addMarker(m);
+                pelaajaMerkki = m;
+                pelaaja.setPaikka(s);
+                poistaSallitutSolmut();
+            }
+        }
+    }
+
+    private void merkkaaSallitutSolmut(int noppa){
+        sallitut = pelaaja.sallitutSolmut(noppa);
+        for(Solmu s: sallitut){
+            GoogleMapMarker m = new GoogleMapMarker(
+                    s.getMarker().getCaption(),
+                    s.getMarker().getPosition(),
+                    false,
+                    "VAADIN/tinakuppi.jpg");
+            googleMap.addMarker(m);
+            sallitutMarkers.add(m);
+        }
+    }
+
+    private void poistaSallitutSolmut() {
+//        sallitut.clear(); //TODO estää siirtämästä pelaajaa uudestaan mutta aiheuttaa virheilmoitukset
+        for(GoogleMapMarker sm: sallitutMarkers){
+                googleMap.removeMarker(sm);
+        }
     }
 
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
