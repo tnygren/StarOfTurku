@@ -5,6 +5,8 @@
  */
 package com.StarOfTurku.src.starofturku;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Scanner;
 /**
  *
@@ -15,7 +17,7 @@ public class Pelaaja {
     private int hilpeys;
     private boolean tinatuoppi;
     private Solmu paikka;
-    
+
     //pelaaja alustetaan nimellä ja aloitussolmulla
     public Pelaaja(String nimi, Solmu paikka) {
         this.nimi = nimi;
@@ -36,6 +38,9 @@ public class Pelaaja {
         return hilpeys;
     }
 
+    public void setPaikka(Solmu s){
+        this.paikka = s;
+    }
     public void setHilpeys(int hilpeys) {
         this.hilpeys = hilpeys;
     }
@@ -68,6 +73,29 @@ public class Pelaaja {
         }else{
             System.out.println("Ei onnistunut.. Yritä seuraavalla kierroksella uudelleen.");
         }        
+    }
+    public ArrayList<Solmu> sallitutSolmut(int askeleet){
+        if(askeleet<2){
+            return this.paikka.getVierussolmut();
+        }
+        Queue<Solmu> jono=new LinkedList<>();
+        ArrayList<Solmu> kaydyt=new ArrayList<>();
+        jono.add(this.paikka);
+        kaydyt.add(this.paikka);
+        for(int i=0; i<(askeleet*2+1); i++){
+            Solmu tutkittava=jono.remove();
+            for(Solmu s:tutkittava.getVierussolmut()){
+                if(!kaydyt.contains(s)){
+                    jono.add(s);
+                }
+            }
+            kaydyt.add(tutkittava);
+        }
+        ArrayList<Solmu>palautus=new ArrayList<>();
+        for(Solmu s:jono){
+            palautus.add(s);
+        }
+        return palautus;
     }
     public void liiku(int askeleet){
         Scanner lukija=new Scanner(System.in);
