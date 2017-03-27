@@ -43,9 +43,9 @@ public class MyUI extends UI {
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-        final HorizontalLayout layout = new HorizontalLayout();
-        layout.setMargin(true);
-        layout.setSpacing(true);
+        final AbsoluteLayout layout = new AbsoluteLayout();
+        layout.setWidth("2000px");
+        layout.setHeight("2000px");
         setContent(layout);
 
         googleMap.addMarker(pelaajaMerkki);
@@ -60,32 +60,44 @@ public class MyUI extends UI {
         googleMap.setMinZoom(4);
         googleMap.setMaxZoom(16);
 
-        googleMap.setSizeFull();
+        //googleMap.setSizeFull();
         layout.setSizeFull();
-        layout.addComponent(googleMap);
+        layout.addComponent(googleMap, "left: 0px; top: 0px;");
 
         googleMap.addMarkerClickListener(this::siirraPelaaja);
 
         VerticalLayout ui = new VerticalLayout();
-        ui.addComponent(new Label("Pelaaja 1"));
-        ui.addComponent(new Label("Hilpeyttä: " +pelaaja.getHilpeys()));
+        Panel pelaajanTiedot= new Panel("Pelaaja 1");
+        //ui.addComponent(new Label("Pelaaja 1"));
+        pelaajanTiedot.setWidth("200px");
+        pelaajanTiedot.setHeight("80px");
+        
+        pelaajanTiedot.setContent(new Label("Hilpeyttä " + pelaaja.getHilpeys()));
+        layout.addComponent(pelaajanTiedot, "left: 700px; top: 0px;");
+        //ui.addComponent(new Label("Hilpeyttä: " +pelaaja.getHilpeys()));
         Button button = new Button("Heitä noppaa");
-
+        Panel nopanLuvut=new Panel("Heiton tulos:");
+        nopanLuvut.setWidth("150px");
+        nopanLuvut.setHeight("160px");
+        layout.addComponent(nopanLuvut, "left: 700px; top: 300px;");
         button.addClickListener( e -> {
             // TODO lisää jokin ehto joka estää painamasta useaan kertaan
-            ui.addComponent( new Label(Integer.toString(noppa.heita())));            
+//            ui.addComponent( new Label(Integer.toString(noppa.heita())));
+            nopanLuvut.setContent(nopanKuva(noppa.heita()));
             merkkaaSallitutSolmut(noppa.getTulos());
-            Window window=new Window("Testi");
-            Image image = new Image(null,
-                new ThemeResource("img/cops.png"));
-            image.setSizeUndefined();
-            window.setWidth("210px");
-            window.setHeight("320px");
-            window.setContent(image);            
-            this.addWindow(window);
+            pelaajanTiedot.setContent(new Label("testataan "+noppa.getTulos()));
+//            Window window=new Window("Testi");
+//            Image image = new Image(null,
+//                new ThemeResource("img/cops.png"));
+//            image.setSizeUndefined();
+//            window.setWidth("210px");
+//            window.setHeight("320px");
+//            window.setContent(image);
+//            window.center();
+//            this.addWindow(window);
         });
         ui.addComponent(button);
-        layout.addComponent(ui);
+        layout.addComponent(ui, "left: 700px; top: 150px;");
     }
 
     private void siirraPelaaja(GoogleMapMarker clicked) {
@@ -130,5 +142,26 @@ public class MyUI extends UI {
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
     public static class MyUIServlet extends VaadinServlet {
+    }
+    private Image nopanKuva(int luku){
+        if(luku==1){
+            return new Image(null, new ThemeResource("img/one.png"));
+        }
+        if(luku==2){
+            return new Image(null, new ThemeResource("img/two.png"));
+        }
+        if(luku==3){
+            return new Image(null, new ThemeResource("img/three.png"));
+        }
+        if(luku==4){
+            return new Image(null, new ThemeResource("img/four.png"));
+        }
+        if(luku==5){
+            return new Image(null, new ThemeResource("img/five.png"));
+        }
+        if(luku==6){
+            return new Image(null, new ThemeResource("img/six.png"));
+        }
+        return new Image(null, new ThemeResource(""));
     }
 }
