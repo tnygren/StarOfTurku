@@ -78,17 +78,23 @@ public class Pelaaja {
         if(askeleet<2){
             return this.paikka.getVierussolmut();
         }
+        askeleet--;
         Queue<Solmu> jono=new LinkedList<>();
         ArrayList<Solmu> kaydyt=new ArrayList<>();
         jono.add(this.paikka);
         kaydyt.add(this.paikka);
-        for(int i=0; i<(askeleet*2+1); i++){
+        int laskuri=askeleet*2+1;
+        while(laskuri>0){
             Solmu tutkittava=jono.remove();
             for(Solmu s:tutkittava.getVierussolmut()){
+                if(tutkittava.getVierussolmut().size()>2){
+                    laskuri++;
+                }
                 if(!kaydyt.contains(s)){
                     jono.add(s);
                 }
             }
+            laskuri--;
             kaydyt.add(tutkittava);
         }
         ArrayList<Solmu>palautus=new ArrayList<>();
@@ -97,39 +103,39 @@ public class Pelaaja {
         }
         return palautus;
     }
-    public void liiku(int askeleet){
-        Scanner lukija=new Scanner(System.in);
-        //tallennetaan läpikäydyt solmut, jotta ei voida mennä edestakaisin kahden solmun välillä
-        ArrayList<Solmu> kaydyt=new ArrayList<>();
-        String vastaus="l";
-        if(this.paikka.getTokeni()!=null && this.hilpeys<100){
-            System.out.println("Liikutaanko vai yritetäänkö avata? l/a");
-            vastaus=lukija.nextLine();
-        }
-        if(vastaus.equals("l")){
-            for(int i=0; i<=askeleet; i++){
-                System.out.println("Valitse paikka johon siirrytään: ");
-                for(int j=0; j<this.paikka.getVierussolmut().size(); j++){
-                    if(!kaydyt.contains(this.paikka.getVierussolmut().get(j))){
-                       System.out.println(j + ": " + this.paikka.getVierussolmut().get(j).getNimi());
-                    }
-                }
-                int valinta=Integer.parseInt(lukija.nextLine());
-                kaydyt.add(this.paikka);
-                this.paikka.setPelaaja(false);
-                this.paikka=this.paikka.getVierussolmut().get(valinta);
-                this.paikka.setPelaaja(true);
-            }
-            if(this.paikka.getTokeni()!=null){
-                System.out.println("Paikassa on tokeni. Avataanko se? k/e");
-                vastaus=lukija.nextLine();
-                if(vastaus.equals("k")){
-                    this.avaaTokeni();
-                }                
-            }
-        }
-        if(vastaus.equals("a")){            
-            avaaNopalla();
-        }
-    }
+//    public void liiku(int askeleet){
+//        Scanner lukija=new Scanner(System.in);
+//        //tallennetaan läpikäydyt solmut, jotta ei voida mennä edestakaisin kahden solmun välillä
+//        ArrayList<Solmu> kaydyt=new ArrayList<>();
+//        String vastaus="l";
+//        if(this.paikka.getTokeni()!=null && this.hilpeys<100){
+//            System.out.println("Liikutaanko vai yritetäänkö avata? l/a");
+//            vastaus=lukija.nextLine();
+//        }
+////        if(vastaus.equals("l")){
+////            for(int i=0; i<=askeleet; i++){
+////                System.out.println("Valitse paikka johon siirrytään: ");
+////                for(int j=0; j<this.paikka.getVierussolmut().size(); j++){
+//                    if(!kaydyt.contains(this.paikka.getVierussolmut().get(j))){
+//                       System.out.println(j + ": " + this.paikka.getVierussolmut().get(j).getNimi());
+//                    }
+//                }
+//                int valinta=Integer.parseInt(lukija.nextLine());
+//                kaydyt.add(this.paikka);
+//                this.paikka.setPelaaja(false);
+//                this.paikka=this.paikka.getVierussolmut().get(valinta);
+//                this.paikka.setPelaaja(true);
+//            }
+//            if(this.paikka.getTokeni()!=null){
+//                System.out.println("Paikassa on tokeni. Avataanko se? k/e");
+//                vastaus=lukija.nextLine();
+//                if(vastaus.equals("k")){
+//                    this.avaaTokeni();
+//                }                
+//            }
+//        }
+//        if(vastaus.equals("a")){            
+//            avaaNopalla();
+//        }
+//    }
 }

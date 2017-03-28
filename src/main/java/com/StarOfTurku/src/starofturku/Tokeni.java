@@ -13,31 +13,53 @@ public class Tokeni {
     private String nimi;
     private int arvo;
     private boolean tinatuoppi;
+    private String iconUrl;
 
     public Tokeni(String nimi, int arvo) {
         this.nimi = nimi;
         this.arvo = arvo;
         this.tinatuoppi=false;
+        this.iconUrl=null;
     }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
+    }
+    
     public Tokeni luoTyhja(){
-        return new Tokeni("Tyhjä", 0);
+        Tokeni t= new Tokeni("Tyhjä", 0);
+        t.setIconUrl("img/tyhja.png");
+        return t;
     }
     public Tokeni luoTuoppi(){
-        return new Tokeni("Tuoppi", 300);
+        Tokeni t= new Tokeni("Tuoppi", 300);
+        t.setIconUrl("img/beer.png");
+        return t;
     }
     public Tokeni luoViini(){
-        return new Tokeni("Viini", 500);
+        Tokeni t= new Tokeni("Viini", 500);
+        t.setIconUrl("img/wine.png");
+        return t;
     }
-    public Tokeni luoShotti(){
-        return new Tokeni("Shotti", 1000);
+    public Tokeni luoDrinkki(){
+        Tokeni t= new Tokeni("Drinkki", 1000);
+        t.setIconUrl("img/coctail.png");
+        return t;
     }
     public Tokeni luoTinatuoppi(){
         Tokeni tinatuoppi=new Tokeni("Tinatuoppi",0);
         tinatuoppi.setTinatuoppi(true);
+        tinatuoppi.setIconUrl("img/trophy.png");
         return tinatuoppi;
     }
     public Tokeni luoPoliisit(){
-        return new Tokeni("Poliisit", -10000);
+        Tokeni t= new Tokeni("Poliisit", -10000);
+        t.setIconUrl("img/cops.png");
+        return t;
     }
 
     public void setNimi(String nimi) {
