@@ -6,20 +6,23 @@ import com.StarOfTurku.src.starofturku.Noppa;
 import com.StarOfTurku.src.starofturku.Pelaaja;
 import com.StarOfTurku.src.starofturku.Solmu;
 import com.StarOfTurku.src.starofturku.Kartta;
-import main.java.com.vaadin.ApiKey;
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.data.Container;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.shared.communication.PushMode;
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
-import com.vaadin.tapio.googlemaps.client.events.MarkerClickListener;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapMarker;
-import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapPolyline;
 import com.vaadin.ui.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser window
@@ -29,6 +32,7 @@ import java.util.ArrayList;
  * overridden to add component to the user interface and initialize non-component functionality.
  */
 @Theme("mytheme")
+@Push(PushMode.MANUAL)
 public class MyUI extends UI {
     private Noppa noppa = new Noppa();
     private ApiKey key = new ApiKey();
@@ -37,67 +41,133 @@ public class MyUI extends UI {
     private ArrayList<Solmu> sallitut;
     private ArrayList<GoogleMapMarker> sallitutMarkers = new ArrayList<>();
     private final GoogleMap googleMap = new GoogleMap(key.getKey(), null, null);
-    private GoogleMapMarker pelaajaMerkki = new GoogleMapMarker(
-            "Pelaaja", kartta.getKartta().get(0).getMarker().getPosition(),
-        true, "VAADIN/pelaaja1.png");
+    private final Window InfoRuutu= new Window("Pelaajatiedot");
+    private static final BeanItemContainer<Pelaaja> beanPelaaja = new BeanItemContainer<>(Pelaaja.class);
+    private Panel tokeni;
+    private Panel pelaajanTiedot;
+    private GoogleMapMarker pelaajaMerkki;
+    private VerticalLayout ui = new VerticalLayout();
+
+    private int lastMessage = 0;
+
+    public MyUI() {
+        super();
+        beanPelaaja.addItemSetChangeListener(this::messagesChanged);
+    }
+
+    @Override
+    public void close() {
+        beanPelaaja.removeItemSetChangeListener(this::messagesChanged);
+        super.close();
+    }
+
+    private void messagesChanged(Container.ItemSetChangeEvent event) {
+        this.access(() -> {
+            List<Pelaaja> messages = beanPelaaja.getItemIds();
+            for(; lastMessage < messages.size(); lastMessage++) {
+
+                // Ollaaanko ruudussa missä on token
+                if (pelaaja.getPaikka().getTokeni() != null) {
+                    InfoRuutu.setModal(true);
+                    VerticalLayout TokenKysymys = new VerticalLayout();
+                    TokenKysymys.addComponent(new Label("Haluatko kääntää laatan?"));
+
+                    Button kylla = new Button("Kyllä");
+                    TokenKysymys.addComponent(kylla);
+                    Button en = new Button("En");
+                    TokenKysymys.addComponent(en);
+                    ui.addComponent(TokenKysymys);
+
+                    kylla.addClickListener( e -> {
+                        tokeni.setContent(new Label(pelaaja.getPaikka().getTokeni().getNimi()));
+                        Image tokeninKuva = new Image();
+                        tokeninKuva.setSource(new ThemeResource(pelaaja.getPaikka().getTokeni().getIconUrl()));
+                        ui.addComponent(tokeninKuva,2);
+                        int h = pelaaja.getHilpeys();
+                        h += pelaaja.getPaikka().getTokeni().getArvo();
+                        pelaaja.setHilpeys(h);
+                        pelaaja.getPaikka().setTokeni(null);
+                        pelaajanTiedot.setContent(new Label("Hilpeyttä " + pelaaja.getHilpeys()));
+                        pelaaja.getPaikka().getMarker().setIconUrl("VAADIN/red-circle.png");
+                        ui.removeComponent(TokenKysymys);
+                        InfoRuutu.setModal(false);
+                        InfoRuutu.setPosition(10,60);
+                    });
+
+                    en.addClickListener( e -> {
+                        ui.removeComponent(TokenKysymys);
+                        InfoRuutu.setModal(false);
+                        InfoRuutu.setPosition(10,60);
+                    });
+                }
+                push();
+            }
+        });
+    }
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-        final AbsoluteLayout layout = new AbsoluteLayout();
-        layout.setWidth("2000px");
-        layout.setHeight("2000px");
+        VerticalLayout layout = new VerticalLayout();
+        layout.setSizeFull();
         setContent(layout);
+        asetaKartta();
+        asetaIkkuna();
+        layout.getUI().addWindow(InfoRuutu);
+        layout.addComponent(googleMap);
+    }
 
+    // TODO lisää "Aloita uusi peli"-nappi ??
+    private void asetaKartta() {
+        pelaajaMerkki = new GoogleMapMarker( "Pelaaja",
+                kartta.getKartta().get(0).getMarker().getPosition(),
+                true,
+                "VAADIN/pelaaja1.png");
         googleMap.addMarker(pelaajaMerkki);
         for(Solmu s: kartta.getKartta()){
             googleMap.addMarker(s.getMarker());
         }
-
-        googleMap.setCenter(new LatLon(60.459946, 22.287888));
+        googleMap.setCenter(new LatLon(60.456308,22.28508));
         googleMap.setZoom(15);
-        googleMap.setHeight("500px");
-        googleMap.setWidth("650px");
         googleMap.setMinZoom(4);
         googleMap.setMaxZoom(16);
-
-        //googleMap.setSizeFull();
-        layout.setSizeFull();
-        layout.addComponent(googleMap, "left: 0px; top: 0px;");
-
+        googleMap.setSizeFull();
         googleMap.addMarkerClickListener(this::siirraPelaaja);
+    }
 
-        VerticalLayout ui = new VerticalLayout();
-        Panel pelaajanTiedot= new Panel("Pelaaja 1");
-        //ui.addComponent(new Label("Pelaaja 1"));
+    // TODO lisää joku Vaadin Theme
+    private void asetaIkkuna() {
+        pelaajanTiedot= new Panel("Pelaaja 1");
         pelaajanTiedot.setWidth("200px");
         pelaajanTiedot.setHeight("80px");
-        
         pelaajanTiedot.setContent(new Label("Hilpeyttä " + pelaaja.getHilpeys()));
-        layout.addComponent(pelaajanTiedot, "left: 700px; top: 0px;");
-        //ui.addComponent(new Label("Hilpeyttä: " +pelaaja.getHilpeys()));
-        Button button = new Button("Heitä noppaa");
+        ui.addComponent(pelaajanTiedot);
+
+        tokeni = new Panel("löydetyt laatat");
+        tokeni.setWidth("200px");
+        tokeni.setHeight("80px");
+        ui.addComponent(tokeni);
+
         Panel nopanLuvut=new Panel("Heiton tulos:");
-        nopanLuvut.setWidth("150px");
+        nopanLuvut.setWidth("200px");
         nopanLuvut.setHeight("160px");
-        layout.addComponent(nopanLuvut, "left: 700px; top: 300px;");
-        button.addClickListener( e -> {
+        ui.addComponent(nopanLuvut);
+
+        Button button = new Button("Heitä noppaa");
+        button.setClickShortcut(ShortcutAction.KeyCode.N); // TODO ei toimi kokoruudussa
+        button.setDescription("Pikanäppäin: N");
+        button.addClickListener(e -> {
             // TODO lisää jokin ehto joka estää painamasta useaan kertaan
-//            ui.addComponent( new Label(Integer.toString(noppa.heita())));
             nopanLuvut.setContent(nopanKuva(noppa.heita()));
-            merkkaaSallitutSolmut(noppa.getTulos());
-            pelaajanTiedot.setContent(new Label("testataan "+noppa.getTulos()));
-//            Window window=new Window("Testi");
-//            Image image = new Image(null,
-//                new ThemeResource("img/cops.png"));
-//            image.setSizeUndefined();
-//            window.setWidth("210px");
-//            window.setHeight("320px");
-//            window.setContent(image);
-//            window.center();
-//            this.addWindow(window);
+            merkkaaSallitutSolmut(noppa.getTulos()); // TODO merkkaa edelleen joskus vääriä merkkejä
         });
         ui.addComponent(button);
-        layout.addComponent(ui, "left: 700px; top: 150px;");
+        ui.setComponentAlignment(button, Alignment.MIDDLE_CENTER);
+
+        InfoRuutu.setWidth(200.0f, Unit.PIXELS);
+        InfoRuutu.setStyleName("ui");
+        InfoRuutu.setClosable(false);
+        InfoRuutu.setPosition(10,60);
+        InfoRuutu.setContent(ui);
     }
 
     private void siirraPelaaja(GoogleMapMarker clicked) {
@@ -113,8 +183,9 @@ public class MyUI extends UI {
                         pelaajaMerkki.getIconUrl());
                 googleMap.addMarker(m);
                 pelaajaMerkki = m;
-                pelaaja.setPaikka(s);
                 poistaSallitutSolmut();
+                pelaaja.setPaikka(s);
+                beanPelaaja.addBean(new Pelaaja(null,s));
             }
         }
     }
@@ -139,10 +210,7 @@ public class MyUI extends UI {
         }
     }
 
-    @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
-    @VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
-    public static class MyUIServlet extends VaadinServlet {
-    }
+    // TODO kuvat liian isoja inforuudulle
     private Image nopanKuva(int luku){
         if(luku==1){
             return new Image(null, new ThemeResource("img/one.png"));
@@ -163,5 +231,10 @@ public class MyUI extends UI {
             return new Image(null, new ThemeResource("img/six.png"));
         }
         return new Image(null, new ThemeResource(""));
+    }
+
+    @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
+    @VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
+    public static class MyUIServlet extends VaadinServlet {
     }
 }
