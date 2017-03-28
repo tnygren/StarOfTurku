@@ -41,6 +41,11 @@ public class Pelaaja {
     public void setPaikka(Solmu s){
         this.paikka = s;
     }
+
+    public Solmu getPaikka() {
+        return paikka;
+    }
+
     public void setHilpeys(int hilpeys) {
         this.hilpeys = hilpeys;
     }

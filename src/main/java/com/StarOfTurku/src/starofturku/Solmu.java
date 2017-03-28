@@ -48,6 +48,10 @@ public class Solmu {
         return tokeni;
     }
 
+    public void setTokeni(Tokeni tokeni) {
+        this.tokeni = tokeni;
+    }
+
     public boolean isPelaaja() {
         return pelaaja;
     }
