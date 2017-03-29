@@ -13,52 +13,83 @@ public class Tokeni {
     private String nimi;
     private int arvo;
     private boolean tinatuoppi;
-    private String iconUrl;
+    private String bigIcon;
+    private String smallIcon;
+    private String audio;
 
     public Tokeni(String nimi, int arvo) {
         this.nimi = nimi;
         this.arvo = arvo;
         this.tinatuoppi=false;
-        this.iconUrl=null;
+        this.bigIcon=null;
+        this.audio=null;
+        this.smallIcon=null;
     }
 
-    public String getIconUrl() {
-        return iconUrl;
+    public String getSmallIcon() {
+        return smallIcon;
     }
 
-    public void setIconUrl(String iconUrl) {
-        this.iconUrl = iconUrl;
+    public void setSmallIcon(String smallIcon) {
+        this.smallIcon = smallIcon;
+    }
+
+    public String getAudio() {
+        return audio;
+    }
+
+    public void setAudio(String audio) {
+        this.audio = audio;
+    }
+    
+    public String getBigIcon() {
+        return bigIcon;
+    }
+
+    public void setBigIcon(String iconUrl) {
+        this.bigIcon = iconUrl;
     }
     
     public Tokeni luoTyhja(){
         Tokeni t= new Tokeni("Tyhjä", 0);
-        t.setIconUrl("img/tyhja.png");
+        t.setBigIcon("img/tyhja.png");
+        t.setAudio("audio/empty.mp3");
+        t.setSmallIcon("img/tyhjasmall.png");
         return t;
     }
     public Tokeni luoTuoppi(){
         Tokeni t= new Tokeni("Tuoppi", 300);
-        t.setIconUrl("img/beer.png");
+        t.setBigIcon("img/beer.png");
+        t.setAudio("audio/beer.mp3");
+        t.setSmallIcon("img/beersmall.png");
         return t;
     }
     public Tokeni luoViini(){
         Tokeni t= new Tokeni("Viini", 500);
-        t.setIconUrl("img/wine.png");
+        t.setBigIcon("img/wine.png");
+        t.setAudio("audio/wine.mp3");
+        t.setSmallIcon("img/winesmall.png");
         return t;
     }
     public Tokeni luoDrinkki(){
         Tokeni t= new Tokeni("Drinkki", 1000);
-        t.setIconUrl("img/coctail.png");
+        t.setBigIcon("img/coctail.png");
+        t.setAudio("audio/cocktail.mp3");
+        t.setSmallIcon("img/coctailsmall.png");
         return t;
     }
     public Tokeni luoTinatuoppi(){
         Tokeni tinatuoppi=new Tokeni("Tinatuoppi",0);
         tinatuoppi.setTinatuoppi(true);
-        tinatuoppi.setIconUrl("img/trophy.png");
+        tinatuoppi.setBigIcon("img/trophy.png");
+        tinatuoppi.setAudio("audio/victory.mp3");
+        tinatuoppi.setSmallIcon("img/trophysmall.png");
         return tinatuoppi;
     }
     public Tokeni luoPoliisit(){
         Tokeni t= new Tokeni("Poliisit", -10000);
-        t.setIconUrl("img/cops.png");
+        t.setBigIcon("img/cops.png");
+        t.setSmallIcon("img/beer.png");
         return t;
     }
 

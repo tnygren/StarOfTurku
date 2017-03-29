@@ -6,15 +6,18 @@ import com.StarOfTurku.src.starofturku.Noppa;
 import com.StarOfTurku.src.starofturku.Pelaaja;
 import com.StarOfTurku.src.starofturku.Solmu;
 import com.StarOfTurku.src.starofturku.Kartta;
+import starofturku.ApiKey;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.shared.Position;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
@@ -71,7 +74,6 @@ public class MyUI extends UI {
                     InfoRuutu.setModal(true);
                     VerticalLayout TokenKysymys = new VerticalLayout();
                     TokenKysymys.addComponent(new Label("Haluatko kääntää laatan?"));
-
                     Button kylla = new Button("Kyllä");
                     TokenKysymys.addComponent(kylla);
                     Button en = new Button("En");
@@ -79,16 +81,25 @@ public class MyUI extends UI {
                     ui.addComponent(TokenKysymys);
 
                     kylla.addClickListener( e -> {
+                        Audio tokeniSound=new Audio(null, new ThemeResource(pelaaja.getPaikka().getTokeni().getAudio()));
+                        tokeniSound.setShowControls(false); tokeniSound.setSizeUndefined();
+                        Notification notif = new Notification(null, Notification.TYPE_HUMANIZED_MESSAGE);
+                        notif.setPosition(Position.MIDDLE_CENTER);
+                        notif.setIcon(new ThemeResource(pelaaja.getPaikka().getTokeni().getBigIcon()));
+                        notif.setDelayMsec(3000);
+                        notif.show(Page.getCurrent());
+                        //ui.addComponent(notif);
+                        ui.addComponent(tokeniSound);
+                        ui.setExpandRatio(tokeniSound, 0);
+                        tokeniSound.play();
                         tokeni.setContent(new Label(pelaaja.getPaikka().getTokeni().getNimi()));
                         Image tokeninKuva = new Image();
-                        tokeninKuva.setSource(new ThemeResource(pelaaja.getPaikka().getTokeni().getIconUrl()));
+                        tokeninKuva.setSource(new ThemeResource(pelaaja.getPaikka().getTokeni().getSmallIcon()));
                         ui.addComponent(tokeninKuva,2);
-                        int h = pelaaja.getHilpeys();
-                        h += pelaaja.getPaikka().getTokeni().getArvo();
-                        pelaaja.setHilpeys(h);
+                        pelaaja.paivitaHilpeys(pelaaja.getPaikka().getTokeni());
                         pelaaja.getPaikka().setTokeni(null);
                         pelaajanTiedot.setContent(new Label("Hilpeyttä " + pelaaja.getHilpeys()));
-                        pelaaja.getPaikka().getMarker().setIconUrl("VAADIN/red-circle.png");
+                        pelaaja.getPaikka().getMarker().setIconUrl("VAADIN/bigblack-circle.png");
                         ui.removeComponent(TokenKysymys);
                         InfoRuutu.setModal(false);
                         InfoRuutu.setPosition(10,60);
@@ -141,7 +152,10 @@ public class MyUI extends UI {
         pelaajanTiedot.setHeight("80px");
         pelaajanTiedot.setContent(new Label("Hilpeyttä " + pelaaja.getHilpeys()));
         ui.addComponent(pelaajanTiedot);
-
+        Audio noppaSound=new Audio(null, new ThemeResource ("audio/dice-roll.wav"));
+        noppaSound.setShowControls(false); noppaSound.setSizeUndefined();
+        ui.addComponent(noppaSound);
+        ui.setExpandRatio(noppaSound, 0);
         tokeni = new Panel("löydetyt laatat");
         tokeni.setWidth("200px");
         tokeni.setHeight("80px");
@@ -151,30 +165,36 @@ public class MyUI extends UI {
         nopanLuvut.setWidth("200px");
         nopanLuvut.setHeight("160px");
         ui.addComponent(nopanLuvut);
-
+        
         Button button = new Button("Heitä noppaa");
         button.setClickShortcut(ShortcutAction.KeyCode.N); // TODO ei toimi kokoruudussa
         button.setDescription("Pikanäppäin: N");
         button.addClickListener(e -> {
             // TODO lisää jokin ehto joka estää painamasta useaan kertaan
+            noppaSound.play();
             nopanLuvut.setContent(nopanKuva(noppa.heita()));
             merkkaaSallitutSolmut(noppa.getTulos()); // TODO merkkaa edelleen joskus vääriä merkkejä
         });
         ui.addComponent(button);
         ui.setComponentAlignment(button, Alignment.MIDDLE_CENTER);
-
         InfoRuutu.setWidth(200.0f, Unit.PIXELS);
         InfoRuutu.setStyleName("ui");
         InfoRuutu.setClosable(false);
         InfoRuutu.setPosition(10,60);
         InfoRuutu.setContent(ui);
+
     }
 
-    private void siirraPelaaja(GoogleMapMarker clicked) {
+    private void siirraPelaaja(GoogleMapMarker clicked) {   
+        Audio moveSound= new Audio(null, new ThemeResource ("audio/move.mp3"));
+        moveSound.setShowControls(false); moveSound.setSizeUndefined();
+        ui.addComponent(moveSound);
+        ui.setExpandRatio(moveSound, 0);
         for(Solmu s: sallitut){
             // Jos klikattu ruutu kuuluu sallittuihin ruutuihin
             if (clicked.getPosition().equals(s.getMarker().getPosition())) {
                 // Siirtää pelaaja markerin
+                moveSound.play();
                 googleMap.removeMarker(pelaajaMerkki);
                 GoogleMapMarker m = new GoogleMapMarker(
                         pelaajaMerkki.getCaption(),

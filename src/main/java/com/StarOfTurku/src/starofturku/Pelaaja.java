@@ -51,6 +51,9 @@ public class Pelaaja {
     }
     //Poliisi-tokeni pienentää pelaajan hilpeyden nollaan, joten jos hilpeys saa negatiivisen arvon, palautetaan se nollaan
     public void paivitaHilpeys(Tokeni t){
+        if(t.isTinatuoppi()){
+            this.tinatuoppi=true;
+        }
         this.hilpeys+=t.getArvo();
         if(this.hilpeys<0){
             this.hilpeys=0;
