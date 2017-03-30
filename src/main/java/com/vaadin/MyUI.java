@@ -195,23 +195,25 @@ public class MyUI extends UI {
         moveSound.setSizeUndefined();
         ui.addComponent(moveSound);
         ui.setExpandRatio(moveSound, 0);
-        for (Solmu s : sallitut) {
-            // Jos klikattu ruutu kuuluu sallittuihin ruutuihin
-            if (clicked.getPosition().equals(s.getMarker().getPosition())) {
-                // Siirtää pelaaja markerin
-                moveSound.play();
-                googleMap.removeMarker(pelaajaMerkki);
-                GoogleMapMarker m = new GoogleMapMarker(
-                        pelaajaMerkki.getCaption(),
-                        clicked.getPosition(),
-                        false,
-                        pelaajaMerkki.getIconUrl());
-                googleMap.addMarker(m);
-                pelaajaMerkki = m;
-                poistaSallitutSolmut();
-                pelaaja.setPaikka(s);
-                beanPelaaja.addBean(new Pelaaja(null, s));
+        if (!sallitut.isEmpty()) {
+            for (Solmu s : sallitut) {
+                // Jos klikattu ruutu kuuluu sallittuihin ruutuihin
+                if (clicked.getPosition().equals(s.getMarker().getPosition())) {
+                    // Siirtää pelaaja markerin
+                    moveSound.play();
+                    googleMap.removeMarker(pelaajaMerkki);
+                    GoogleMapMarker m = new GoogleMapMarker(
+                            pelaajaMerkki.getCaption(),
+                            clicked.getPosition(),
+                            false,
+                            pelaajaMerkki.getIconUrl());
+                    googleMap.addMarker(m);
+                    pelaajaMerkki = m;
+                    pelaaja.setPaikka(s);
+                    beanPelaaja.addBean(new Pelaaja(null, s));
+                }
             }
+            poistaSallitutSolmut();
         }
     }
 
@@ -229,13 +231,12 @@ public class MyUI extends UI {
     }
 
     private void poistaSallitutSolmut() {
-//        sallitut.clear(); //TODO estää siirtämästä pelaajaa uudestaan mutta aiheuttaa virheilmoitukset
+        sallitut.clear();
         for (GoogleMapMarker sm : sallitutMarkers) {
             googleMap.removeMarker(sm);
         }
     }
 
-    // TODO kuvat liian isoja inforuudulle
     private Image nopanKuva(int luku) {
         if (luku == 1) {
             return new Image(null, new ThemeResource("img/one.png"));
