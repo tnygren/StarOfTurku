@@ -50,6 +50,7 @@ public class MyUI extends UI {
     private Panel pelaajanTiedot;
     private GoogleMapMarker pelaajaMerkki;
     private VerticalLayout ui = new VerticalLayout();
+    private GridLayout keratytTokenit = new GridLayout(4,4);
 
     private int lastMessage = 0;
 
@@ -95,7 +96,7 @@ public class MyUI extends UI {
                         tokeni.setContent(new Label(pelaaja.getPaikka().getTokeni().getNimi()));
                         Image tokeninKuva = new Image();
                         tokeninKuva.setSource(new ThemeResource(pelaaja.getPaikka().getTokeni().getSmallIcon()));
-                        ui.addComponent(tokeninKuva,2);
+                        keratytTokenit.addComponent(tokeninKuva);
                         pelaaja.paivitaHilpeys(pelaaja.getPaikka().getTokeni());
                         pelaaja.getPaikka().setTokeni(null);
                         pelaajanTiedot.setContent(new Label("Hilpeyttä " + pelaaja.getHilpeys()));
@@ -160,6 +161,7 @@ public class MyUI extends UI {
         tokeni.setWidth("200px");
         tokeni.setHeight("80px");
         ui.addComponent(tokeni);
+        ui.addComponent(keratytTokenit);
 
         Panel nopanLuvut=new Panel("Heiton tulos:");
         nopanLuvut.setWidth("200px");
