@@ -53,6 +53,7 @@ public class MyUI extends UI {
     private GridLayout keratytTokenit = new GridLayout(4, 4);
 
     private int lastMessage = 0;
+    private int vuoro = 1;
 
     public MyUI() {
         super();
@@ -174,10 +175,12 @@ public class MyUI extends UI {
         button.setClickShortcut(ShortcutAction.KeyCode.N); // TODO ei toimi kokoruudussa
         button.setDescription("Pikanäppäin: N");
         button.addClickListener(e -> {
-            // TODO lisää jokin ehto joka estää painamasta useaan kertaan
-            noppaSound.play();
-            nopanLuvut.setContent(nopanKuva(noppa.heita()));
-            merkkaaSallitutSolmut(noppa.getTulos()); // TODO merkkaa edelleen joskus vääriä merkkejä
+            if (vuoro==1) {
+                noppaSound.play();
+                nopanLuvut.setContent(nopanKuva(noppa.heita()));
+                merkkaaSallitutSolmut(noppa.getTulos()); // TODO merkkaa edelleen joskus vääriä merkkejä
+                vuoro = 0;
+            }
         });
         ui.addComponent(button);
         ui.setComponentAlignment(button, Alignment.MIDDLE_CENTER);
@@ -195,23 +198,26 @@ public class MyUI extends UI {
         moveSound.setSizeUndefined();
         ui.addComponent(moveSound);
         ui.setExpandRatio(moveSound, 0);
-        for (Solmu s : sallitut) {
-            // Jos klikattu ruutu kuuluu sallittuihin ruutuihin
-            if (clicked.getPosition().equals(s.getMarker().getPosition())) {
-                // Siirtää pelaaja markerin
-                moveSound.play();
-                googleMap.removeMarker(pelaajaMerkki);
-                GoogleMapMarker m = new GoogleMapMarker(
-                        pelaajaMerkki.getCaption(),
-                        clicked.getPosition(),
-                        false,
-                        pelaajaMerkki.getIconUrl());
-                googleMap.addMarker(m);
-                pelaajaMerkki = m;
-                poistaSallitutSolmut();
-                pelaaja.setPaikka(s);
-                beanPelaaja.addBean(new Pelaaja(null, s));
+        if (!sallitut.isEmpty()) {
+            for (Solmu s : sallitut) {
+                // Jos klikattu ruutu kuuluu sallittuihin ruutuihin
+                if (clicked.getPosition().equals(s.getMarker().getPosition())) {
+                    // Siirtää pelaaja markerin
+                    moveSound.play();
+                    googleMap.removeMarker(pelaajaMerkki);
+                    GoogleMapMarker m = new GoogleMapMarker(
+                            pelaajaMerkki.getCaption(),
+                            clicked.getPosition(),
+                            false,
+                            pelaajaMerkki.getIconUrl());
+                    googleMap.addMarker(m);
+                    pelaajaMerkki = m;
+                    pelaaja.setPaikka(s);
+                    beanPelaaja.addBean(new Pelaaja(null, s));
+                }
             }
+            poistaSallitutSolmut();
+            vuoro = 1;
         }
     }
 
@@ -229,13 +235,12 @@ public class MyUI extends UI {
     }
 
     private void poistaSallitutSolmut() {
-//        sallitut.clear(); //TODO estää siirtämästä pelaajaa uudestaan mutta aiheuttaa virheilmoitukset
+        sallitut.clear();
         for (GoogleMapMarker sm : sallitutMarkers) {
             googleMap.removeMarker(sm);
         }
     }
 
-    // TODO kuvat liian isoja inforuudulle
     private Image nopanKuva(int luku) {
         if (luku == 1) {
             return new Image(null, new ThemeResource("img/one.png"));
