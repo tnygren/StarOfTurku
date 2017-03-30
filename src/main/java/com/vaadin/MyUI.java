@@ -53,6 +53,7 @@ public class MyUI extends UI {
     private GridLayout keratytTokenit = new GridLayout(4, 4);
 
     private int lastMessage = 0;
+    private int vuoro = 1;
 
     public MyUI() {
         super();
@@ -174,10 +175,12 @@ public class MyUI extends UI {
         button.setClickShortcut(ShortcutAction.KeyCode.N); // TODO ei toimi kokoruudussa
         button.setDescription("Pikanäppäin: N");
         button.addClickListener(e -> {
-            // TODO lisää jokin ehto joka estää painamasta useaan kertaan
-            noppaSound.play();
-            nopanLuvut.setContent(nopanKuva(noppa.heita()));
-            merkkaaSallitutSolmut(noppa.getTulos()); // TODO merkkaa edelleen joskus vääriä merkkejä
+            if (vuoro==1) {
+                noppaSound.play();
+                nopanLuvut.setContent(nopanKuva(noppa.heita()));
+                merkkaaSallitutSolmut(noppa.getTulos()); // TODO merkkaa edelleen joskus vääriä merkkejä
+                vuoro = 0;
+            }
         });
         ui.addComponent(button);
         ui.setComponentAlignment(button, Alignment.MIDDLE_CENTER);
@@ -214,6 +217,7 @@ public class MyUI extends UI {
                 }
             }
             poistaSallitutSolmut();
+            vuoro = 1;
         }
     }
 
