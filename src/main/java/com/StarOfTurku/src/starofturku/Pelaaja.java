@@ -46,6 +46,10 @@ public class Pelaaja {
         return paikka;
     }
 
+    public boolean isTinatuoppi() {
+        return tinatuoppi;
+    }
+
     public void setHilpeys(int hilpeys) {
         this.hilpeys = hilpeys;
     }

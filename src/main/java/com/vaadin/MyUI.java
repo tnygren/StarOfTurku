@@ -71,6 +71,14 @@ public class MyUI extends UI {
             List<Pelaaja> messages = beanPelaaja.getItemIds();
             for (; lastMessage < messages.size(); lastMessage++) {
 
+                // Ollaanko kotiruudussa tinatuopin kanssa
+                if (pelaaja.isTinatuoppi() && pelaaja.getPaikka().getNimi() == "Yo-kylä") {
+                    Notification notif = new Notification(null, null, Notification.Type.ERROR_MESSAGE);
+                    notif.setPosition(Position.MIDDLE_CENTER);
+                    notif.setIcon(new ThemeResource("img/wincondition.jpg"));
+                    notif.show(Page.getCurrent());
+                }
+
                 // Ollaaanko ruudussa missä on token
                 if (pelaaja.getPaikka().getTokeni() != null) {
                     InfoRuutu.setModal(true);
@@ -86,7 +94,7 @@ public class MyUI extends UI {
                         Audio tokeniSound = new Audio(null, new ThemeResource(pelaaja.getPaikka().getTokeni().getAudio()));
                         tokeniSound.setShowControls(false);
                         tokeniSound.setSizeUndefined();
-                        Notification notif = new Notification(null, Notification.TYPE_HUMANIZED_MESSAGE);
+                        Notification notif = new Notification(null, null, Notification.Type.HUMANIZED_MESSAGE);
                         notif.setPosition(Position.MIDDLE_CENTER);
                         notif.setIcon(new ThemeResource(pelaaja.getPaikka().getTokeni().getBigIcon()));
                         notif.setDelayMsec(3000);
@@ -140,15 +148,14 @@ public class MyUI extends UI {
         for (Solmu s : kartta.getKartta()) {
             googleMap.addMarker(s.getMarker());
         }
-        googleMap.setCenter(new LatLon(60.456308, 22.28508));
-        googleMap.setZoom(15);
+        googleMap.setCenter(new LatLon(60.458963,22.289));
+        googleMap.setZoom(16);
         googleMap.setMinZoom(4);
         googleMap.setMaxZoom(16);
         googleMap.setSizeFull();
         googleMap.addMarkerClickListener(this::siirraPelaaja);
     }
 
-    // TODO lisää joku Vaadin Theme
     private void asetaIkkuna() {
         pelaajanTiedot = new Panel("Pelaaja 1");
         pelaajanTiedot.setWidth("200px");
@@ -172,8 +179,6 @@ public class MyUI extends UI {
         ui.addComponent(nopanLuvut);
 
         Button button = new Button("Heitä noppaa");
-        button.setClickShortcut(ShortcutAction.KeyCode.N); // TODO ei toimi kokoruudussa
-        button.setDescription("Pikanäppäin: N");
         button.addClickListener(e -> {
             if (vuoro==1) {
                 noppaSound.play();
@@ -189,7 +194,6 @@ public class MyUI extends UI {
         InfoRuutu.setClosable(false);
         InfoRuutu.setPosition(10, 60);
         InfoRuutu.setContent(ui);
-
     }
 
     private void siirraPelaaja(GoogleMapMarker clicked) {
@@ -213,11 +217,12 @@ public class MyUI extends UI {
                     googleMap.addMarker(m);
                     pelaajaMerkki = m;
                     pelaaja.setPaikka(s);
+                    googleMap.setCenter(pelaaja.getPaikka().getMarker().getPosition());
                     beanPelaaja.addBean(new Pelaaja(null, s));
+                    vuoro = 1;
                 }
             }
             poistaSallitutSolmut();
-            vuoro = 1;
         }
     }
 

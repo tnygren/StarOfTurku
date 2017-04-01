@@ -90,7 +90,7 @@ public class Tokeni {
         Tokeni t= new Tokeni("Poliisit", -10000);
         t.setBigIcon("img/cops.png");
         t.setAudio("audio/police.mp3");
-        t.setSmallIcon("img/beer.png");
+        t.setSmallIcon("img/copssmall.png");
         return t;
     }
 
