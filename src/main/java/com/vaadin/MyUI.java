@@ -12,7 +12,6 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
@@ -28,11 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This UI is the application entry point. A UI may either represent a browser window
- * (or tab) or some part of a html page where a Vaadin application is embedded.
- * <p>
- * The UI is initialized using {@link #init(VaadinRequest)}. This method is intended to be
- * overridden to add component to the user interface and initialize non-component functionality.
+ *  Tämä on sovelluksen alkamiskohta. UI voi olla verkkoselaimen ikkuna (tai välilehti) tai joku muu
+ *  osa html sivua mihin Vaadin sovellus on sulautettu.
  */
 @Theme("mytheme")
 @Push(PushMode.MANUAL)
@@ -55,18 +51,28 @@ public class MyUI extends UI {
     private int lastMessage = 0;
     private int vuoro = 1;
 
+    /**
+     * Lisää tapahtumakäsittelijän
+     */
     public MyUI() {
         super();
-        beanPelaaja.addItemSetChangeListener(this::messagesChanged);
+        beanPelaaja.addItemSetChangeListener(this::pelaajaChanged);
     }
 
+    /**
+     * Poistaa tapahtumakäsittelijän
+     */
     @Override
     public void close() {
-        beanPelaaja.removeItemSetChangeListener(this::messagesChanged);
+        beanPelaaja.removeItemSetChangeListener(this::pelaajaChanged);
         super.close();
     }
 
-    private void messagesChanged(Container.ItemSetChangeEvent event) {
+    /**
+     * Tapahtumakäsittelijä pelaaja-luokan muutoksille
+     * @param event Muutostapahtuma
+     */
+    private void pelaajaChanged(Container.ItemSetChangeEvent event) {
         this.access(() -> {
             List<Pelaaja> messages = beanPelaaja.getItemIds();
             for (; lastMessage < messages.size(); lastMessage++) {
@@ -99,7 +105,6 @@ public class MyUI extends UI {
                         notif.setIcon(new ThemeResource(pelaaja.getPaikka().getTokeni().getBigIcon()));
                         notif.setDelayMsec(3000);
                         notif.show(Page.getCurrent());
-                        //ui.addComponent(notif);
                         ui.addComponent(tokeniSound);
                         ui.setExpandRatio(tokeniSound, 0);
                         tokeniSound.play();
@@ -127,6 +132,10 @@ public class MyUI extends UI {
         });
     }
 
+    /**
+     * Rakentaa ja konfiguroi UI näkymän.
+     * Ylikirjoittaa UI-luokan init() metodin.
+     */
     @Override
     protected void init(VaadinRequest vaadinRequest) {
         VerticalLayout layout = new VerticalLayout();
@@ -139,6 +148,10 @@ public class MyUI extends UI {
     }
 
     // TODO lisää "Aloita uusi peli"-nappi ??
+    /**
+     * Konfiguroi Google Maps asetukset.
+     * Lisää siihen pelilaudan ruudut sekä pelaajaa kuvaavan merkin.
+     */
     private void asetaKartta() {
         pelaajaMerkki = new GoogleMapMarker("Pelaaja",
                 kartta.getKartta().get(0).getMarker().getPosition(),
@@ -156,6 +169,10 @@ public class MyUI extends UI {
         googleMap.addMarkerClickListener(this::siirraPelaaja);
     }
 
+    // TODO sallittut solmut palauttaa joskus vääriä merkkejä
+    /**
+     * Konfiguroi pelitapahtumia näyttävät ikkunan asetukset.
+     */
     private void asetaIkkuna() {
         pelaajanTiedot = new Panel("Pelaaja 1");
         pelaajanTiedot.setWidth("200px");
@@ -183,7 +200,7 @@ public class MyUI extends UI {
             if (vuoro==1) {
                 noppaSound.play();
                 nopanLuvut.setContent(nopanKuva(noppa.heita()));
-                merkkaaSallitutSolmut(noppa.getTulos()); // TODO merkkaa edelleen joskus vääriä merkkejä
+                merkkaaSallitutSolmut(noppa.getTulos());
                 vuoro = 0;
             }
         });
@@ -196,6 +213,10 @@ public class MyUI extends UI {
         InfoRuutu.setContent(ui);
     }
 
+    /**
+     * Siirtää pelaajamerkin pelilaudalla hiirellä napsautettuun paikkaan.
+     * @param clicked   Klikattu peliruutu
+     */
     private void siirraPelaaja(GoogleMapMarker clicked) {
         Audio moveSound = new Audio(null, new ThemeResource("audio/move.mp3"));
         moveSound.setShowControls(false);
@@ -226,6 +247,10 @@ public class MyUI extends UI {
         }
     }
 
+    /**
+     * Merkitsee pelilaudalle nopan lukeman mukaisen sallittujen siirtojen ruudut.
+     * @param noppa Nopan lukema
+     */
     private void merkkaaSallitutSolmut(int noppa) {
         sallitut = pelaaja.sallitutSolmut(noppa);
         for (Solmu s : sallitut) {
@@ -239,6 +264,9 @@ public class MyUI extends UI {
         }
     }
 
+    /**
+     * Poistaa kartalta sallittujen siirtojen merkit
+     */
     private void poistaSallitutSolmut() {
         sallitut.clear();
         for (GoogleMapMarker sm : sallitutMarkers) {
@@ -246,6 +274,11 @@ public class MyUI extends UI {
         }
     }
 
+    /**
+     * Nopan lukemien kuvat
+     * @param luku  Nopan lukema
+     * @return      Nopan lukemaa vastaava kuva nopasta
+     */
     private Image nopanKuva(int luku) {
         if (luku == 1) {
             return new Image(null, new ThemeResource("img/one.png"));
