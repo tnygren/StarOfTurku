@@ -89,6 +89,7 @@ public class Tokeni {
     public Tokeni luoPoliisit(){
         Tokeni t= new Tokeni("Poliisit", -10000);
         t.setBigIcon("img/cops.png");
+        t.setAudio("audio/police.mp3");
         t.setSmallIcon("img/beer.png");
         return t;
     }
