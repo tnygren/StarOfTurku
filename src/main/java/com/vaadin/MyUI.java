@@ -12,7 +12,6 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
@@ -28,46 +27,63 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This UI is the application entry point. A UI may either represent a browser window
- * (or tab) or some part of a html page where a Vaadin application is embedded.
- * <p>
- * The UI is initialized using {@link #init(VaadinRequest)}. This method is intended to be
- * overridden to add component to the user interface and initialize non-component functionality.
+ *  Tämä on sovelluksen alkamiskohta. UI voi olla verkkoselaimen ikkuna (tai välilehti) tai joku muu
+ *  osa html sivua mihin Vaadin sovellus on sulautettu.
  */
 @Theme("mytheme")
 @Push(PushMode.MANUAL)
 public class MyUI extends UI {
     private Noppa noppa = new Noppa();
     private ApiKey key = new ApiKey();
-    private Kartta kartta=new Kartta();
-    private Pelaaja pelaaja= new Pelaaja("Simo", kartta.getKartta().get(0));
+    private Kartta kartta = new Kartta();
+    private Pelaaja pelaaja = new Pelaaja("Mauri Antero", kartta.getKartta().get(0));
     private ArrayList<Solmu> sallitut;
     private ArrayList<GoogleMapMarker> sallitutMarkers = new ArrayList<>();
     private final GoogleMap googleMap = new GoogleMap(key.getKey(), null, null);
-    private final Window InfoRuutu= new Window("Pelaajatiedot");
+    private final Window InfoRuutu = new Window("Pelaajatiedot");
     private static final BeanItemContainer<Pelaaja> beanPelaaja = new BeanItemContainer<>(Pelaaja.class);
     private Panel tokeni;
     private Panel pelaajanTiedot;
     private GoogleMapMarker pelaajaMerkki;
     private VerticalLayout ui = new VerticalLayout();
+    private GridLayout keratytTokenit = new GridLayout(4, 4);
 
     private int lastMessage = 0;
+    private int vuoro = 1;
 
+    /**
+     * Lisää tapahtumakäsittelijän
+     */
     public MyUI() {
         super();
-        beanPelaaja.addItemSetChangeListener(this::messagesChanged);
+        beanPelaaja.addItemSetChangeListener(this::pelaajaChanged);
     }
 
+    /**
+     * Poistaa tapahtumakäsittelijän
+     */
     @Override
     public void close() {
-        beanPelaaja.removeItemSetChangeListener(this::messagesChanged);
+        beanPelaaja.removeItemSetChangeListener(this::pelaajaChanged);
         super.close();
     }
 
-    private void messagesChanged(Container.ItemSetChangeEvent event) {
+    /**
+     * Tapahtumakäsittelijä pelaaja-luokan muutoksille
+     * @param event Muutostapahtuma
+     */
+    private void pelaajaChanged(Container.ItemSetChangeEvent event) {
         this.access(() -> {
             List<Pelaaja> messages = beanPelaaja.getItemIds();
-            for(; lastMessage < messages.size(); lastMessage++) {
+            for (; lastMessage < messages.size(); lastMessage++) {
+
+                // Ollaanko kotiruudussa tinatuopin kanssa
+                if (pelaaja.isTinatuoppi() && pelaaja.getPaikka().getNimi() == "Yo-kylä") {
+                    Notification notif = new Notification(null, null, Notification.Type.ERROR_MESSAGE);
+                    notif.setPosition(Position.MIDDLE_CENTER);
+                    notif.setIcon(new ThemeResource("img/wincondition.jpg"));
+                    notif.show(Page.getCurrent());
+                }
 
                 // Ollaaanko ruudussa missä on token
                 if (pelaaja.getPaikka().getTokeni() != null) {
@@ -80,35 +96,35 @@ public class MyUI extends UI {
                     TokenKysymys.addComponent(en);
                     ui.addComponent(TokenKysymys);
 
-                    kylla.addClickListener( e -> {
-                        Audio tokeniSound=new Audio(null, new ThemeResource(pelaaja.getPaikka().getTokeni().getAudio()));
-                        tokeniSound.setShowControls(false); tokeniSound.setSizeUndefined();
-                        Notification notif = new Notification(null, Notification.TYPE_HUMANIZED_MESSAGE);
+                    kylla.addClickListener(e -> {
+                        Audio tokeniSound = new Audio(null, new ThemeResource(pelaaja.getPaikka().getTokeni().getAudio()));
+                        tokeniSound.setShowControls(false);
+                        tokeniSound.setSizeUndefined();
+                        Notification notif = new Notification(null, null, Notification.Type.HUMANIZED_MESSAGE);
                         notif.setPosition(Position.MIDDLE_CENTER);
                         notif.setIcon(new ThemeResource(pelaaja.getPaikka().getTokeni().getBigIcon()));
                         notif.setDelayMsec(3000);
                         notif.show(Page.getCurrent());
-                        //ui.addComponent(notif);
                         ui.addComponent(tokeniSound);
                         ui.setExpandRatio(tokeniSound, 0);
                         tokeniSound.play();
                         tokeni.setContent(new Label(pelaaja.getPaikka().getTokeni().getNimi()));
                         Image tokeninKuva = new Image();
                         tokeninKuva.setSource(new ThemeResource(pelaaja.getPaikka().getTokeni().getSmallIcon()));
-                        ui.addComponent(tokeninKuva,2);
+                        keratytTokenit.addComponent(tokeninKuva);
                         pelaaja.paivitaHilpeys(pelaaja.getPaikka().getTokeni());
                         pelaaja.getPaikka().setTokeni(null);
                         pelaajanTiedot.setContent(new Label("Hilpeyttä " + pelaaja.getHilpeys()));
                         pelaaja.getPaikka().getMarker().setIconUrl("VAADIN/bigblack-circle.png");
                         ui.removeComponent(TokenKysymys);
                         InfoRuutu.setModal(false);
-                        InfoRuutu.setPosition(10,60);
+                        InfoRuutu.setPosition(10, 60);
                     });
 
-                    en.addClickListener( e -> {
+                    en.addClickListener(e -> {
                         ui.removeComponent(TokenKysymys);
                         InfoRuutu.setModal(false);
-                        InfoRuutu.setPosition(10,60);
+                        InfoRuutu.setPosition(10, 60);
                     });
                 }
                 push();
@@ -116,6 +132,10 @@ public class MyUI extends UI {
         });
     }
 
+    /**
+     * Rakentaa ja konfiguroi UI näkymän.
+     * Ylikirjoittaa UI-luokan init() metodin.
+     */
     @Override
     protected void init(VaadinRequest vaadinRequest) {
         VerticalLayout layout = new VerticalLayout();
@@ -128,91 +148,112 @@ public class MyUI extends UI {
     }
 
     // TODO lisää "Aloita uusi peli"-nappi ??
+    /**
+     * Konfiguroi Google Maps asetukset.
+     * Lisää siihen pelilaudan ruudut sekä pelaajaa kuvaavan merkin.
+     */
     private void asetaKartta() {
-        pelaajaMerkki = new GoogleMapMarker( "Pelaaja",
+        pelaajaMerkki = new GoogleMapMarker("Pelaaja",
                 kartta.getKartta().get(0).getMarker().getPosition(),
                 true,
                 "VAADIN/pelaaja1.png");
         googleMap.addMarker(pelaajaMerkki);
-        for(Solmu s: kartta.getKartta()){
+        for (Solmu s : kartta.getKartta()) {
             googleMap.addMarker(s.getMarker());
         }
-        googleMap.setCenter(new LatLon(60.456308,22.28508));
-        googleMap.setZoom(15);
+        googleMap.setCenter(new LatLon(60.458963,22.289));
+        googleMap.setZoom(16);
         googleMap.setMinZoom(4);
         googleMap.setMaxZoom(16);
         googleMap.setSizeFull();
         googleMap.addMarkerClickListener(this::siirraPelaaja);
     }
 
-    // TODO lisää joku Vaadin Theme
+    // TODO sallittut solmut palauttaa joskus vääriä merkkejä
+    /**
+     * Konfiguroi pelitapahtumia näyttävät ikkunan asetukset.
+     */
     private void asetaIkkuna() {
-        pelaajanTiedot= new Panel("Pelaaja 1");
+        pelaajanTiedot = new Panel("Pelaaja 1");
         pelaajanTiedot.setWidth("200px");
         pelaajanTiedot.setHeight("80px");
         pelaajanTiedot.setContent(new Label("Hilpeyttä " + pelaaja.getHilpeys()));
         ui.addComponent(pelaajanTiedot);
-        Audio noppaSound=new Audio(null, new ThemeResource ("audio/dice-roll.wav"));
-        noppaSound.setShowControls(false); noppaSound.setSizeUndefined();
+        Audio noppaSound = new Audio(null, new ThemeResource("audio/dice-roll.wav"));
+        noppaSound.setShowControls(false);
+        noppaSound.setSizeUndefined();
         ui.addComponent(noppaSound);
         ui.setExpandRatio(noppaSound, 0);
         tokeni = new Panel("löydetyt laatat");
         tokeni.setWidth("200px");
         tokeni.setHeight("80px");
         ui.addComponent(tokeni);
+        ui.addComponent(keratytTokenit);
 
-        Panel nopanLuvut=new Panel("Heiton tulos:");
+        Panel nopanLuvut = new Panel("Heiton tulos:");
         nopanLuvut.setWidth("200px");
         nopanLuvut.setHeight("160px");
         ui.addComponent(nopanLuvut);
-        
+
         Button button = new Button("Heitä noppaa");
-        button.setClickShortcut(ShortcutAction.KeyCode.N); // TODO ei toimi kokoruudussa
-        button.setDescription("Pikanäppäin: N");
         button.addClickListener(e -> {
-            // TODO lisää jokin ehto joka estää painamasta useaan kertaan
-            noppaSound.play();
-            nopanLuvut.setContent(nopanKuva(noppa.heita()));
-            merkkaaSallitutSolmut(noppa.getTulos()); // TODO merkkaa edelleen joskus vääriä merkkejä
+            if (vuoro==1) {
+                noppaSound.play();
+                nopanLuvut.setContent(nopanKuva(noppa.heita()));
+                merkkaaSallitutSolmut(noppa.getTulos());
+                vuoro = 0;
+            }
         });
         ui.addComponent(button);
         ui.setComponentAlignment(button, Alignment.MIDDLE_CENTER);
         InfoRuutu.setWidth(200.0f, Unit.PIXELS);
         InfoRuutu.setStyleName("ui");
         InfoRuutu.setClosable(false);
-        InfoRuutu.setPosition(10,60);
+        InfoRuutu.setPosition(10, 60);
         InfoRuutu.setContent(ui);
-
     }
 
-    private void siirraPelaaja(GoogleMapMarker clicked) {   
-        Audio moveSound= new Audio(null, new ThemeResource ("audio/move.mp3"));
-        moveSound.setShowControls(false); moveSound.setSizeUndefined();
+    /**
+     * Siirtää pelaajamerkin pelilaudalla hiirellä napsautettuun paikkaan.
+     * @param clicked   Klikattu peliruutu
+     */
+    private void siirraPelaaja(GoogleMapMarker clicked) {
+        Audio moveSound = new Audio(null, new ThemeResource("audio/move.mp3"));
+        moveSound.setShowControls(false);
+        moveSound.setSizeUndefined();
         ui.addComponent(moveSound);
         ui.setExpandRatio(moveSound, 0);
-        for(Solmu s: sallitut){
-            // Jos klikattu ruutu kuuluu sallittuihin ruutuihin
-            if (clicked.getPosition().equals(s.getMarker().getPosition())) {
-                // Siirtää pelaaja markerin
-                moveSound.play();
-                googleMap.removeMarker(pelaajaMerkki);
-                GoogleMapMarker m = new GoogleMapMarker(
-                        pelaajaMerkki.getCaption(),
-                        clicked.getPosition(),
-                        false,
-                        pelaajaMerkki.getIconUrl());
-                googleMap.addMarker(m);
-                pelaajaMerkki = m;
-                poistaSallitutSolmut();
-                pelaaja.setPaikka(s);
-                beanPelaaja.addBean(new Pelaaja(null,s));
+        if (!sallitut.isEmpty()) {
+            for (Solmu s : sallitut) {
+                // Jos klikattu ruutu kuuluu sallittuihin ruutuihin
+                if (clicked.getPosition().equals(s.getMarker().getPosition())) {
+                    // Siirtää pelaaja markerin
+                    moveSound.play();
+                    googleMap.removeMarker(pelaajaMerkki);
+                    GoogleMapMarker m = new GoogleMapMarker(
+                            pelaajaMerkki.getCaption(),
+                            clicked.getPosition(),
+                            false,
+                            pelaajaMerkki.getIconUrl());
+                    googleMap.addMarker(m);
+                    pelaajaMerkki = m;
+                    pelaaja.setPaikka(s);
+                    googleMap.setCenter(pelaaja.getPaikka().getMarker().getPosition());
+                    beanPelaaja.addBean(new Pelaaja(null, s));
+                    vuoro = 1;
+                }
             }
+            poistaSallitutSolmut();
         }
     }
 
-    private void merkkaaSallitutSolmut(int noppa){
+    /**
+     * Merkitsee pelilaudalle nopan lukeman mukaisen sallittujen siirtojen ruudut.
+     * @param noppa Nopan lukema
+     */
+    private void merkkaaSallitutSolmut(int noppa) {
         sallitut = pelaaja.sallitutSolmut(noppa);
-        for(Solmu s: sallitut){
+        for (Solmu s : sallitut) {
             GoogleMapMarker m = new GoogleMapMarker(
                     s.getMarker().getCaption(),
                     s.getMarker().getPosition(),
@@ -223,31 +264,38 @@ public class MyUI extends UI {
         }
     }
 
+    /**
+     * Poistaa kartalta sallittujen siirtojen merkit
+     */
     private void poistaSallitutSolmut() {
-//        sallitut.clear(); //TODO estää siirtämästä pelaajaa uudestaan mutta aiheuttaa virheilmoitukset
-        for(GoogleMapMarker sm: sallitutMarkers){
-                googleMap.removeMarker(sm);
+        sallitut.clear();
+        for (GoogleMapMarker sm : sallitutMarkers) {
+            googleMap.removeMarker(sm);
         }
     }
 
-    // TODO kuvat liian isoja inforuudulle
-    private Image nopanKuva(int luku){
-        if(luku==1){
+    /**
+     * Nopan lukemien kuvat
+     * @param luku  Nopan lukema
+     * @return      Nopan lukemaa vastaava kuva nopasta
+     */
+    private Image nopanKuva(int luku) {
+        if (luku == 1) {
             return new Image(null, new ThemeResource("img/one.png"));
         }
-        if(luku==2){
+        if (luku == 2) {
             return new Image(null, new ThemeResource("img/two.png"));
         }
-        if(luku==3){
+        if (luku == 3) {
             return new Image(null, new ThemeResource("img/three.png"));
         }
-        if(luku==4){
+        if (luku == 4) {
             return new Image(null, new ThemeResource("img/four.png"));
         }
-        if(luku==5){
+        if (luku == 5) {
             return new Image(null, new ThemeResource("img/five.png"));
         }
-        if(luku==6){
+        if (luku == 6) {
             return new Image(null, new ThemeResource("img/six.png"));
         }
         return new Image(null, new ThemeResource(""));

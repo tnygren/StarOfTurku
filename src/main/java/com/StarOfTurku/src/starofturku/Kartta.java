@@ -24,8 +24,7 @@ public class Kartta {
     }
     public void alusta(){
         this.kartta.add(new Solmu("Yo-kylä", null, new GoogleMapMarker("Yo-kylä", new LatLon(60.460794, 22.285921), false, "VAADIN/start.png")));
-        this.kartta.add(new Solmu(new GoogleMapMarker("-", new LatLon(60.461133, 22.286404), false, "VAADIN/black-circle.png")));
-        this.kartta.add(new Solmu(new GoogleMapMarker("-", new LatLon(60.461593, 22.287134), false, "VAADIN/black-circle.png")));
+        this.kartta.add(new Solmu(new GoogleMapMarker("-", new LatLon(60.461529, 22.286880), false, "VAADIN/black-circle.png")));
         this.kartta.add(new Solmu(new GoogleMapMarker("-", new LatLon(60.462021, 22.287885), false, "VAADIN/black-circle.png")));
         this.kartta.add(new Solmu("Three Beers", otaTokeni(), new GoogleMapMarker("Three Beers", new LatLon(60.462488, 22.288767), false, "VAADIN/blue-circle.png")));
         this.kartta.add(new Solmu(new GoogleMapMarker("-", new LatLon(60.462208, 22.289464), false, "VAADIN/black-circle.png")));

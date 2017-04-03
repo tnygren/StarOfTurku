@@ -46,6 +46,10 @@ public class Pelaaja {
         return paikka;
     }
 
+    public boolean isTinatuoppi() {
+        return tinatuoppi;
+    }
+
     public void setHilpeys(int hilpeys) {
         this.hilpeys = hilpeys;
     }
@@ -60,28 +64,28 @@ public class Pelaaja {
         }
     }
     //tokenin avaaminen maksaa 100 hilpeyttä
-    public void avaaTokeni(){
-        if(this.hilpeys<100){
-            System.out.println("Herra on nyt sen näköinen, että hänelle ei enää tarjoilla");
-        }else{
-            this.hilpeys-=100;
-            System.out.println("Löysit tokenin: " + this.paikka.getTokeni());
-            Tokeni temp= this.paikka.poistaTokeni();
-            this.hilpeys+=temp.getArvo();
-        }
-    }
-    public void avaaNopalla(){
-        Noppa n=new Noppa();
-        int arpa=n.heita();
-        System.out.print("Heitit " + arpa);
-        if(arpa==6){
-            System.out.println("Onnistuit! Löysit tokenin: " + this.paikka.getTokeni());
-            Tokeni temp= this.paikka.poistaTokeni();
-            this.hilpeys+=temp.getArvo();            
-        }else{
-            System.out.println("Ei onnistunut.. Yritä seuraavalla kierroksella uudelleen.");
-        }        
-    }
+//    public void avaaTokeni(){
+//        if(this.hilpeys<100){
+//            System.out.println("Herra on nyt sen näköinen, että hänelle ei enää tarjoilla");
+//        }else{
+//            this.hilpeys-=100;
+//            System.out.println("Löysit tokenin: " + this.paikka.getTokeni());
+//            Tokeni temp= this.paikka.poistaTokeni();
+//            this.hilpeys+=temp.getArvo();
+//        }
+//    }
+//    public void avaaNopalla(){
+//        Noppa n=new Noppa();
+//        int arpa=n.heita();
+//        System.out.print("Heitit " + arpa);
+//        if(arpa==6){
+//            System.out.println("Onnistuit! Löysit tokenin: " + this.paikka.getTokeni());
+//            Tokeni temp= this.paikka.poistaTokeni();
+//            this.hilpeys+=temp.getArvo();            
+//        }else{
+//            System.out.println("Ei onnistunut.. Yritä seuraavalla kierroksella uudelleen.");
+//        }        
+//    }
     public ArrayList<Solmu> sallitutSolmut(int askeleet){
         if(askeleet<2){
             return this.paikka.getVierussolmut();
@@ -109,8 +113,19 @@ public class Pelaaja {
         for(Solmu s:jono){
             palautus.add(s);
         }
+        jono.clear();
         return palautus;
     }
+//    public ArrayList<Solmu> vierussolmut (ArrayList<Solmu> solmut){
+//        ArrayList<Solmu> palautus= new ArrayList<>();
+//        for(Solmu s: solmut){
+//            ArrayList<Solmu> temp= s.getVierussolmut();
+//            for(Solmu v: temp){
+//                palautus.add(v);
+//            }
+//        }
+//        return palautus;
+//    }
 //    public void liiku(int askeleet){
 //        Scanner lukija=new Scanner(System.in);
 //        //tallennetaan läpikäydyt solmut, jotta ei voida mennä edestakaisin kahden solmun välillä
