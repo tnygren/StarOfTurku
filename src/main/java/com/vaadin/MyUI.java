@@ -49,7 +49,6 @@ public class MyUI extends UI {
     private GridLayout keratytTokenit = new GridLayout(4, 4);
 
     private int lastMessage = 0;
-    private int vuoro = 1;
 
     /**
      * Lisää tapahtumakäsittelijän
@@ -197,11 +196,10 @@ public class MyUI extends UI {
 
         Button button = new Button("Heitä noppaa");
         button.addClickListener(e -> {
-            if (vuoro==1) {
+            if (sallitutMarkers.isEmpty()) {
                 noppaSound.play();
                 nopanLuvut.setContent(nopanKuva(noppa.heita()));
                 merkkaaSallitutSolmut(noppa.getTulos());
-                vuoro = 0;
             }
         });
         ui.addComponent(button);
@@ -240,7 +238,6 @@ public class MyUI extends UI {
                     pelaaja.setPaikka(s);
                     googleMap.setCenter(pelaaja.getPaikka().getMarker().getPosition());
                     beanPelaaja.addBean(new Pelaaja(null, s));
-                    vuoro = 1;
                 }
             }
             poistaSallitutSolmut();
@@ -272,6 +269,7 @@ public class MyUI extends UI {
         for (GoogleMapMarker sm : sallitutMarkers) {
             googleMap.removeMarker(sm);
         }
+        sallitutMarkers.clear();
     }
 
     /**
