@@ -1,4 +1,4 @@
-package com.StarOfTurku.src.starofturku;
+package com.vaadin;
 
 import java.util.Random;
 

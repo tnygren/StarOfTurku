@@ -3,8 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.StarOfTurku.src.starofturku;
-
+package com.vaadin;
 import java.util.ArrayList;
 import java.util.Random;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapMarker;
