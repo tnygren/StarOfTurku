@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
+import java.util.Stack;
 /**
  *
  * @author Jussi
@@ -17,8 +18,11 @@ public class Pelaaja {
     private int hilpeys;
     private boolean tinatuoppi;
     private Solmu paikka;
-
-    //pelaaja alustetaan nimellä ja aloitussolmulla
+    
+    /**
+     * Pelaaja alustetaan nimellä ja aloitussolmulla.
+     */
+    
     public Pelaaja(String nimi, Solmu paikka) {
         this.nimi = nimi;
         this.hilpeys=500;
@@ -53,7 +57,11 @@ public class Pelaaja {
     public void setHilpeys(int hilpeys) {
         this.hilpeys = hilpeys;
     }
-    //Poliisi-tokeni pienentää pelaajan hilpeyden nollaan, joten jos hilpeys saa negatiivisen arvon, palautetaan se nollaan
+    /**
+     * Päivittää pelaajan hilpeyden tokenin osoittamalla määrällä. Mikäli tokeni on tinatuoppi, metodi myös muuttaa
+     * pelaajan tinatuoppi arvon muotoon true. Mikäli hilpeys menee negatiiviseksi poliisit tokenin takia, metodi palauttaa hilpeyden
+     * arvoon 0.
+     */
     public void paivitaHilpeys(Tokeni t){
         if(t.isTinatuoppi()){
             this.tinatuoppi=true;
@@ -63,30 +71,12 @@ public class Pelaaja {
             this.hilpeys=0;
         }
     }
-    //tokenin avaaminen maksaa 100 hilpeyttä
-//    public void avaaTokeni(){
-//        if(this.hilpeys<100){
-//            System.out.println("Herra on nyt sen näköinen, että hänelle ei enää tarjoilla");
-//        }else{
-//            this.hilpeys-=100;
-//            System.out.println("Löysit tokenin: " + this.paikka.getTokeni());
-//            Tokeni temp= this.paikka.poistaTokeni();
-//            this.hilpeys+=temp.getArvo();
-//        }
-//    }
-//    public void avaaNopalla(){
-//        Noppa n=new Noppa();
-//        int arpa=n.heita();
-//        System.out.print("Heitit " + arpa);
-//        if(arpa==6){
-//            System.out.println("Onnistuit! Löysit tokenin: " + this.paikka.getTokeni());
-//            Tokeni temp= this.paikka.poistaTokeni();
-//            this.hilpeys+=temp.getArvo();            
-//        }else{
-//            System.out.println("Ei onnistunut.. Yritä seuraavalla kierroksella uudelleen.");
-//        }        
-//    }
-    public ArrayList<Solmu> sallitutSolmut(int askeleet){
+    /**
+     * Palauttaa tietyn solmut, jotka ovat tietyn etäisyyden päässä pelaajan tämänhetkisestä paikasta. 
+     * Parametrina käytetään nopanheiton silmälukua. 
+     * @param askeleet Nopan lukema
+     */
+    public ArrayList<Solmu> sallitutSolmut(int askeleet){       
         if(askeleet<2){
             return this.paikka.getVierussolmut();
         }
@@ -96,8 +86,9 @@ public class Pelaaja {
         jono.add(this.paikka);
         kaydyt.add(this.paikka);
         int laskuri=askeleet*2+1;
+        Solmu tutkittava;
         while(laskuri>0){
-            Solmu tutkittava=jono.remove();
+                tutkittava=jono.remove();
             for(Solmu s:tutkittava.getVierussolmut()){
                 if(tutkittava.getVierussolmut().size()>2){
                     laskuri++;
@@ -113,19 +104,15 @@ public class Pelaaja {
         for(Solmu s:jono){
             palautus.add(s);
         }
+        //välillä metodi ei palauta mitään, joten tällaisissa tilanteissa palautetaan alkuperäisen solmun vierussolmut
+        if(palautus.isEmpty()){
+            return this.paikka.getVierussolmut();
+        }
         jono.clear();
+        kaydyt.clear();
         return palautus;
     }
-//    public ArrayList<Solmu> vierussolmut (ArrayList<Solmu> solmut){
-//        ArrayList<Solmu> palautus= new ArrayList<>();
-//        for(Solmu s: solmut){
-//            ArrayList<Solmu> temp= s.getVierussolmut();
-//            for(Solmu v: temp){
-//                palautus.add(v);
-//            }
-//        }
-//        return palautus;
-//    }
+
 //    public void liiku(int askeleet){
 //        Scanner lukija=new Scanner(System.in);
 //        //tallennetaan läpikäydyt solmut, jotta ei voida mennä edestakaisin kahden solmun välillä

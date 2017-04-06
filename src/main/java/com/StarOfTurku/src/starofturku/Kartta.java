@@ -14,6 +14,10 @@ import com.vaadin.tapio.googlemaps.client.LatLon;
  *
  * @author Jussi
  */
+
+/**
+ * Luo uuden kartan, jossa on ennalta määritellyt solmut. Jos haluat muuttaa solmuja, tee se alusta()-metodin kautta
+*/
 public class Kartta {
     private ArrayList<Solmu> kartta;
     private ArrayList<Tokeni> tokenit;
@@ -22,6 +26,10 @@ public class Kartta {
         this.tokenit=alustaTokenit();
         this.alusta();
     }
+    /**
+     * Alustaa kartan ennalta määrätyillä solmuilla. Metodi liittää solmut yhtene siten, että syntyy yhtenäinen jana, jonka molemmissa päissä
+     * on silmukat.
+     */
     public void alusta(){
         this.kartta.add(new Solmu("Yo-kylä", null, new GoogleMapMarker("Yo-kylä", new LatLon(60.460794, 22.285921), false, "VAADIN/start.png")));
         this.kartta.add(new Solmu(new GoogleMapMarker("-", new LatLon(60.461529, 22.286880), false, "VAADIN/black-circle.png")));
@@ -90,7 +98,9 @@ public class Kartta {
 
         this.kartta.get(this.kartta.size()-1).lisaaSolmu(yliopisto);
     }
-    
+    /**
+     * Alustaa tokenit, joita pelin kartta käyttää. 
+     */
     public ArrayList<Tokeni> alustaTokenit(){
         Tokeni tokenisoija= new Tokeni("",0);
         ArrayList<Tokeni> tokenit=new ArrayList<>();
@@ -112,6 +122,9 @@ public class Kartta {
         //yht. 3+5+2+1+1+2= 14
         return tokenit;
     }
+    /**
+     * Palauttaa yhden satunnaisen tokenin ja poistaa sen listasta.
+     */
     public Tokeni otaTokeni(){
         int arpa= new Random().nextInt(this.tokenit.size());
         Tokeni temp= this.tokenit.get(arpa);

@@ -12,6 +12,7 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
@@ -78,6 +79,10 @@ public class MyUI extends UI {
 
                 // Ollaanko kotiruudussa tinatuopin kanssa
                 if (pelaaja.isTinatuoppi() && pelaaja.getPaikka().getNimi() == "Yo-kylä") {
+                    BrowserFrame voitto= new BrowserFrame("", new ExternalResource("https://www.youtube.com/embed/h4QTXZMFcos?rel=0&autoplay=1"));
+                    voitto.setWidth("0px");
+                    voitto.setHeight("0px");
+                    ui.addComponent(voitto);
                     Notification notif = new Notification(null, null, Notification.Type.ERROR_MESSAGE);
                     notif.setPosition(Position.MIDDLE_CENTER);
                     notif.setIcon(new ThemeResource("img/wincondition.jpg"));

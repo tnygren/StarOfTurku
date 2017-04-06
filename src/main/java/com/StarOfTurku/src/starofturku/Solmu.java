@@ -19,7 +19,10 @@ public class Solmu {
     private ArrayList<Solmu>vierussolmut;
     private GoogleMapMarker marker;
 
-    //luodaan konstruktori sekä nimetyille paikoille, että nimettömille siirtymäsolmuille
+    /**
+     * Tällä konstruktorilla luodaan kartan nimelliset solmut. Alkusolmua lukuunottamatta kaikille solmuille määritellään myös
+     * oma tokeni. 
+     */
     public Solmu(String nimi, Tokeni tokeni,GoogleMapMarker marker) {
         this.nimi = nimi;
         this.tokeni = tokeni;
@@ -27,7 +30,9 @@ public class Solmu {
         this.vierussolmut=new ArrayList<>();
         this.marker=marker;
     }
-    
+    /**
+     * Tällä konstruktorilla luodaan kartan nimettömät siirtymäsolmut.
+     */
     public Solmu(GoogleMapMarker marker) {
         this.nimi="-";
         this.tokeni=null;
@@ -63,17 +68,25 @@ public class Solmu {
     public ArrayList<Solmu> getVierussolmut() {
         return vierussolmut;
     }
-    //lisätään kaksi solmua toisiinsa, niin että voidaan kulkea molempiin suuntiin
+    /**
+     *  Lisätään kaksi solmua toisiinsa, niin että voidaan kulkea molempiin suuntiin.
+     */
     public void lisaaSolmu(Solmu s){
         this.vierussolmut.add(s);
         if(!s.getVierussolmut().contains(this)){
             s.lisaaSolmu(this);
         }
     }
-    //julkinen liikenne a.k.a. pikamatkustaminen voi tapahtua vain kahden nimetyn paikan välillä
+    /**
+     * 
+     * Tarkastaa, mikäli kahden solmun välillä on mahdollista pikamatkustaa (pelin tulevaa kehitystä varten)
+     */
     public boolean julkinenLiikenne(Solmu s){
         return !this.nimi.equals("-") && !s.getNimi().equals("-");
     }
+    /**
+     *  Poistaa ja palauttaa solmussa olevan tokenin.
+     */
     public Tokeni poistaTokeni(){
         Tokeni temp=this.tokeni;
         this.tokeni=null;
