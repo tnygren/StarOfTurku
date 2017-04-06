@@ -2,11 +2,6 @@ package com.vaadin;
 
 import javax.servlet.annotation.WebServlet;
 
-import com.StarOfTurku.src.starofturku.Noppa;
-import com.StarOfTurku.src.starofturku.Pelaaja;
-import com.StarOfTurku.src.starofturku.Solmu;
-import com.StarOfTurku.src.starofturku.Kartta;
-import starofturku.ApiKey;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -28,19 +23,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *  Tämä on sovelluksen alkamiskohta. UI voi olla verkkoselaimen ikkuna (tai välilehti) tai joku muu
- *  osa html sivua mihin Vaadin sovellus on sulautettu.
+ * Tämä on sovelluksen alkamiskohta. UI voi olla verkkoselaimen ikkuna (tai välilehti) tai joku muu
+ * osa html sivua mihin Vaadin sovellus on sulautettu.
  */
 @Theme("mytheme")
 @Push(PushMode.MANUAL)
 public class MyUI extends UI {
+    private String avain = "ApiKey";
     private Noppa noppa = new Noppa();
-    private ApiKey key = new ApiKey();
     private Kartta kartta = new Kartta();
     private Pelaaja pelaaja = new Pelaaja("Mauri Antero", kartta.getKartta().get(0));
     private ArrayList<Solmu> sallitut;
     private ArrayList<GoogleMapMarker> sallitutMarkers = new ArrayList<>();
-    private final GoogleMap googleMap = new GoogleMap(key.getKey(), null, null);
+    private final GoogleMap googleMap = new GoogleMap(avain, null, null);
     private final Window InfoRuutu = new Window("Pelaajatiedot");
     private static final BeanItemContainer<Pelaaja> beanPelaaja = new BeanItemContainer<>(Pelaaja.class);
     private Panel tokeni;
@@ -70,6 +65,7 @@ public class MyUI extends UI {
 
     /**
      * Tapahtumakäsittelijä pelaaja-luokan muutoksille
+     *
      * @param event Muutostapahtuma
      */
     private void pelaajaChanged(Container.ItemSetChangeEvent event) {
@@ -151,7 +147,6 @@ public class MyUI extends UI {
         layout.addComponent(googleMap);
     }
 
-    // TODO lisää "Aloita uusi peli"-nappi ??
     /**
      * Konfiguroi Google Maps asetukset.
      * Lisää siihen pelilaudan ruudut sekä pelaajaa kuvaavan merkin.
@@ -165,7 +160,7 @@ public class MyUI extends UI {
         for (Solmu s : kartta.getKartta()) {
             googleMap.addMarker(s.getMarker());
         }
-        googleMap.setCenter(new LatLon(60.458963,22.289));
+        googleMap.setCenter(new LatLon(60.458963, 22.289));
         googleMap.setZoom(16);
         googleMap.setMinZoom(4);
         googleMap.setMaxZoom(16);
@@ -173,7 +168,6 @@ public class MyUI extends UI {
         googleMap.addMarkerClickListener(this::siirraPelaaja);
     }
 
-    // TODO sallittut solmut palauttaa joskus vääriä merkkejä
     /**
      * Konfiguroi pelitapahtumia näyttävät ikkunan asetukset.
      */
@@ -218,7 +212,8 @@ public class MyUI extends UI {
 
     /**
      * Siirtää pelaajamerkin pelilaudalla hiirellä napsautettuun paikkaan.
-     * @param clicked   Klikattu peliruutu
+     *
+     * @param clicked Klikattu peliruutu
      */
     private void siirraPelaaja(GoogleMapMarker clicked) {
         Audio moveSound = new Audio(null, new ThemeResource("audio/move.mp3"));
@@ -251,6 +246,7 @@ public class MyUI extends UI {
 
     /**
      * Merkitsee pelilaudalle nopan lukeman mukaisen sallittujen siirtojen ruudut.
+     *
      * @param noppa Nopan lukema
      */
     private void merkkaaSallitutSolmut(int noppa) {
@@ -279,8 +275,9 @@ public class MyUI extends UI {
 
     /**
      * Nopan lukemien kuvat
-     * @param luku  Nopan lukema
-     * @return      Nopan lukemaa vastaava kuva nopasta
+     *
+     * @param luku Nopan lukema
+     * @return Nopan lukemaa vastaava kuva nopasta
      */
     private Image nopanKuva(int luku) {
         if (luku == 1) {
