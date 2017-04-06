@@ -15,7 +15,7 @@ public class Noppa {
         this.tulos = 0;
     }
     /**
-     * Muuttaa nopan tulosta satunnaiseen arvoon välillä 1-6.
+     * Muuttaa nopan tuloksen satunnaiseen arvoon välillä 1-6.
      */
     public int heita() {
         tulos = 1+this.random.nextInt(6);
